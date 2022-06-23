@@ -1,6 +1,6 @@
 {
   "Description": "해당 템플릿을 사용하여 원하는 플러그인을 개발해보세요.",
-  "Name": "Stream Deck  Workday Timer",
+  "Name": "Stream Deck Workday Timer",
   "Category": "Templates",
   "com.rayco.workdaytimer.action": {
     "Name": "Action",

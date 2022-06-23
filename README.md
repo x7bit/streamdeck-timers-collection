@@ -50,7 +50,7 @@ Replace all occurences of:
 
 and:
 
-`Stream Deck  Workday Timer` with `Your Plugin Name`
+`Stream Deck Workday Timer` with `Your Plugin Name`
 
 Fire up your preferred code-editor and open `app.js`.
 

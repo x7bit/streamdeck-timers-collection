@@ -17,7 +17,6 @@
  * Change this, if you want interactive elements act on any modification (oninput),
  * or while their value changes 'onchange'.
  */
-
 var onchangeevt = 'onchange'; // 'oninput';
 
 /**
@@ -25,14 +24,12 @@ var onchangeevt = 'onchange'; // 'oninput';
  * Please make sure, you put all HTML-elemenets into this wrapper, so they
  * are drawn properly using the integrated CSS.
  */
-
 let sdpiWrapper = document.querySelector('.sdpi-wrapper');
 
 /**
  * Since the Property Inspector is instantiated every time you select a key
  * in Stream Deck software, we can savely cache our settings in a global variable.
  */
-
 let settings;
 
  /**
@@ -41,7 +38,6 @@ let settings;
   * and other information about the current environmet in a JSON object.
   * You can use it to subscribe to events you want to use in your plugin.
   */
-
 $SD.on('connected', (jsn) => {
     /**
      * The passed 'applicationInfo' object contains various information about your
@@ -50,7 +46,6 @@ $SD.on('connected', (jsn) => {
      * We use this to inject some dynamic CSS values (saved in 'common_pi.js'), to allow
      * drawing proper highlight-colors or progressbars.
      */
-
     console.log("connected");
     addDynamicStyles($SD.applicationInfo.colors, 'connectSocket');
 
@@ -67,7 +62,6 @@ $SD.on('connected', (jsn) => {
      *
      * const foundObject = Utils.getProp(JSON-OBJECT, 'path.to.target', defaultValueIfNotFound)
      */
-
     settings = Utils.getProp(jsn, 'actionInfo.payload.settings', false);
     if (settings) {
         updateUI(settings);
@@ -78,7 +72,6 @@ $SD.on('connected', (jsn) => {
  * The 'sendToPropertyInspector' event can be used to send messages directly from your plugin
  * to the Property Inspector without saving these messages to the settings.
  */
-
 $SD.on('sendToPropertyInspector', jsn => {
     const pl = jsn.payload;
     /**
@@ -152,7 +145,6 @@ const updateUI = (pl) => {
  * This is a convenient way to start interacting with your plugin quickly.
  *
  */
-
 $SD.on('piDataChanged', (returnValue) => {
 
     console.log('%c%s', 'color: white; background: blue}; font-size: 15px;', 'piDataChanged');
@@ -199,7 +191,6 @@ $SD.on('piDataChanged', (returnValue) => {
  * Open the console in the remote debugger to inspect what's getting saved.
  *
  */
-
  function saveSettings(sdpi_collection) {
 
     if (typeof sdpi_collection !== 'object') return;
@@ -225,7 +216,6 @@ $SD.on('piDataChanged', (returnValue) => {
   * 'sendToPlugin' events payload.
   *
   */
-
  function sendValueToPlugin(value, prop) {
     console.log("sendValueToPlugin", value, prop);
     if ($SD.connection && $SD.connection.readyState === 1) {
@@ -254,7 +244,6 @@ $SD.on('piDataChanged', (returnValue) => {
  * These helpers allow you to quickly start experimenting and exchanging values with
  * your plugin.
  */
-
 function prepareDOMElements(baseElement) {
     baseElement = baseElement || document;
     Array.from(baseElement.querySelectorAll('.sdpi-item-value')).forEach(
@@ -465,7 +454,6 @@ function handleSdpiItemChange(e, idx) {
  * It uses a quick 'lox()' function, which reads the strings from a global
  * variable 'localizedStrings' (in 'common.js')
  */
-
 // eslint-disable-next-line no-unused-vars
 function localizeUI() {
     const el = document.querySelector('.sdpi-wrapper') || document;
@@ -496,7 +484,6 @@ function localizeUI() {
  * Some more (de-) initialization helpers
  *
  */
-
 document.addEventListener('DOMContentLoaded', function() {
     document.body.classList.add(navigator.userAgent.includes("Mac") ? 'mac' : 'win');
     prepareDOMElements();

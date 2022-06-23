@@ -1,7 +1,6 @@
 /** Stream Deck software passes system-highlight color information
  * to Property Inspector. Here we 'inject' the CSS styles into the DOM
  * when we receive this information. */
-
 function addDynamicStyles (clrs, fromWhere) {
     // console.log("addDynamicStyles", clrs.highlightColor, clrs.highlightColor.slice(0, 7));
     const node = document.getElementById('#sdpi-dynamic-styles') || document.createElement('style');

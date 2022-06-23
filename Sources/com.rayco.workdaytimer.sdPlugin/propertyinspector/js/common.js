@@ -304,7 +304,6 @@ Utils.getRandomColor = function () {
     fadeColor('#061261', 100); // will lighten the color
     fadeColor('#200867'), -100); // will darken the color
 */
-
 Utils.fadeColor = function (col, amt) {
     const min = Math.min, max = Math.max;
     const num = parseInt(col.replace(/#/g, ''), 16);
