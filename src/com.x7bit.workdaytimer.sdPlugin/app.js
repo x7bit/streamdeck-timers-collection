@@ -135,9 +135,12 @@ class Timer {
         this.printRemainingText(nowTs);
       }
 
-      this.intervalId = setInterval(() =>
-        this.printRemainingText()
-      , 1000);
+      setTimeout(() => {
+        this.printRemainingText();
+      }, 500);
+      this.intervalId = setInterval(() => {
+        this.printRemainingText();
+      }, 1000);
     }
   }
 
@@ -153,7 +156,7 @@ class Timer {
 
   printRemainingText(nowTs = null) {
     const elapsedTs = this.getElapsedTs(nowTs);
-    const totalSecs = Math.floor((this.goalTs - elapsedTs) / 1000);
+    const totalSecs = Math.round((this.goalTs - elapsedTs) / 1000);
     const hours = Math.floor(totalSecs / 3600);
     const mins = Math.floor((totalSecs % 3600) / 60);
     const secs = totalSecs % 60;
