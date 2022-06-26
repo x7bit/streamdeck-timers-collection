@@ -1,9 +1,9 @@
 {
-  "Description": "Use this to create your own plugin", 
-  "Name": "Stream Deck Workday Timer", 
-  "Category": "Templates", 
-  "com.rayco.workdaytimer.action": {
-    "Name": "Action", 
+  "Description": "Use this to create your own plugin",
+  "Name": "Stream Deck Workday Timer",
+  "Category": "Templates",
+  "com.x7bit.workdaytimer.action": {
+    "Name": "Action",
     "Tooltip": "This is the only action in this plugin"
   },
   "Localization": {

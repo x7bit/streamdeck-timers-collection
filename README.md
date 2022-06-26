@@ -46,7 +46,7 @@ Use your utility of choice (or your terminal) to do a full string replace using:
 
 Replace all occurences of:
 
-`com.rayco.workdaytimer` with `your.identifier.plugin`
+`com.x7bit.workdaytimer` with `your.identifier.plugin`
 
 and:
 
