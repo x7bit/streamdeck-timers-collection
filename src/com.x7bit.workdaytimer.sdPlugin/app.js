@@ -25,7 +25,7 @@ const action = {
   hours: null,
   minutes: null,
   timer: null,
-  keyDownTs: null,
+  keyDownMs: null,
 
   onWillAppear: function (jsn) {
     this.hours = jsn.payload.settings.hours ?? 8;
@@ -43,7 +43,7 @@ const action = {
         }
       }
     } else {
-      this.timer = new Timer(this.hours, this.minutes, jsn.context);
+      this.timer = new CountdownTimer(this.hours, this.minutes, jsn.context);
       this.timer.printRemainingText();
     }
   },
@@ -51,9 +51,9 @@ const action = {
   onDidReceiveSettings: function(jsn) {
     this.hours = jsn.payload.settings.hours ?? 8;
     this.minutes = jsn.payload.settings.minutes ?? 0;
-    const goalTs = this.hours * 3600000 + this.minutes * 60000;
-    if (this.timer.goalTs !== goalTs) {
-      this.timer.goalTs = goalTs;
+    const goalSec = this.hours * 3600 + this.minutes * 60;
+    if (this.timer.goalSec !== goalSec) {
+      this.timer.goalSec = goalSec;
       this.timer.printRemainingText();
     }
   },
@@ -63,17 +63,18 @@ const action = {
   },
 
   onKeyDown: function (jsn) {
-    this.keyDownTs = Date.now();
+    this.keyDownMs = Date.now();
   },
 
   onKeyUp: function (jsn) {
-    const nowTs = Date.now();
-    const keyElapsed = nowTs - this.keyDownTs;
-    if (keyElapsed < 1500) {  // Short Press
+    const nowMs = Date.now();
+    const keyElapsedMs = nowMs - this.keyDownMs;
+    if (keyElapsedMs < 1500) {  // Short Press
+      const nowSec = Math.round(nowMs / 1000);
       if (this.timer.isRunning) {
-        this.timer.pause(nowTs);
+        this.timer.pause(nowSec);
       } else {
-        this.timer.start(nowTs);
+        this.timer.start(nowSec);
       }
     } else {  // Long Press
       this.timer.reset();
@@ -82,57 +83,61 @@ const action = {
 
 };
 
-class Timer {
-  goalTs;
-  timerStartTs;
-  pauseStartTs;
+class CountdownTimer {
+  goalSec;
+  timerStartSec;
+  pauseStartSec;
   isRunning;
   intervalId;
   context;
 
   constructor(hours, minutes, context) {
-    this.goalTs = hours * 3600000 + minutes * 60000;
-    this.timerStartTs = null;
-    this.pauseStartTs = null;
+    this.goalSec = hours * 3600 + minutes * 60;
+    this.timerStartSec = null;
+    this.pauseStartSec = null;
     this.isRunning = false;
     this.intervalId = null;
     this.context = context;
   }
 
-  getElapsedTs(nowTs = null) {
-    const startTs = this.isRunning ? nowTs ?? Date.now() : this.pauseStartTs ?? this.timerStartTs;
-    return startTs - this.timerStartTs;
+  getElapsedSec(nowSec = null) {
+    const startSec = (
+      this.isRunning ?
+      nowSec ?? Math.round(Date.now() / 1000) :
+      this.pauseStartSec ?? this.timerStartSec
+    );
+    return startSec - this.timerStartSec;
   }
 
-  start(nowTs) {
+  start(nowSec) {
     if (!this.isRunning) {
-      const pauseElapsed = nowTs - this.pauseStartTs;
-      this.timerStartTs += pauseElapsed;
-      this.pauseStartTs = null;
+      const pauseElapsedSec = nowSec - this.pauseStartSec;
+      this.timerStartSec += pauseElapsedSec;
+      this.pauseStartSec = null;
       this.isRunning = true;
-      this.addInterval(nowTs);
+      this.addInterval(nowSec);
     }
   }
 
-  pause(nowTs) {
+  pause(nowSec) {
     if (this.isRunning) {
-      this.pauseStartTs = nowTs;
+      this.pauseStartSec = nowSec;
       this.isRunning = false;
-      this.remInterval(nowTs, true);
+      this.remInterval(nowSec, true);
     }
   }
 
   reset() {
-    this.timerStartTs = null;
-    this.pauseStartTs = null;
+    this.timerStartSec = null;
+    this.pauseStartSec = null;
     this.isRunning = false;
     this.remInterval(null, true);
   }
 
-  addInterval(nowTs = null, updateImmediately = false) {
+  addInterval(nowSec = null, updateImmediately = false) {
     if (this.isRunning) {
       if (updateImmediately) {
-        this.printRemainingText(nowTs);
+        this.printRemainingText(nowSec);
       }
 
       setTimeout(() => {
@@ -144,9 +149,9 @@ class Timer {
     }
   }
 
-  remInterval(nowTs = null, updateImmediately = false) {
+  remInterval(nowSec = null, updateImmediately = false) {
     if (updateImmediately) {
-      this.printRemainingText(nowTs);
+      this.printRemainingText(nowSec);
     }
     if (this.intervalId) {
       clearInterval(this.intervalId);
@@ -154,12 +159,12 @@ class Timer {
     }
   }
 
-  printRemainingText(nowTs = null) {
-    const elapsedTs = this.getElapsedTs(nowTs);
-    const totalSecs = Math.round((this.goalTs - elapsedTs) / 1000);
-    const hours = Math.floor(totalSecs / 3600);
-    const mins = Math.floor((totalSecs % 3600) / 60);
-    const secs = totalSecs % 60;
+  printRemainingText(nowSec = null) {
+    const elapsedSec = this.getElapsedSec(nowSec);
+    const totalSec = this.goalSec - elapsedSec;
+    const hours = Math.floor(totalSec / 3600);
+    const mins = Math.floor((totalSec % 3600) / 60);
+    const secs = totalSec % 60;
     const remainingText = `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     $SD.api.setTitle(this.context, remainingText);
   }
