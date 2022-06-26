@@ -1,0 +1,13 @@
+{
+  "Description": "Configura el tiempo de tu jornada laboral y no trabajes más de la cuenta",
+  "Name": "Temporizador de Jornada",
+  "Category": "Templates",
+  "com.x7bit.workdaytimer.action": {
+    "Name": "Temporizador de Jornada",
+    "Tooltip": "Configura el tiempo de tu jornada laboral y no trabajes más de la cuenta"
+  },
+  "Localization": {
+    "Hours": "Horas",
+    "Minutes": "Minutos"
+  }
+}

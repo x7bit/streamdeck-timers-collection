@@ -22,12 +22,14 @@ function connected(jsn) {
 };
 
 const action = {
-  settings: {},
+  hours: null,
+  minutes: null,
   timer: null,
   keyDownTs: null,
 
   onWillAppear: function (jsn) {
-    this.settings = jsn.payload.settings;
+    this.hours = jsn.payload.settings.hours ?? 8;
+    this.minutes = jsn.payload.settings.minutes ?? 0;
 
     if (this.timer) {
       if (this.timer.context !== jsn.context) {
@@ -35,24 +37,29 @@ const action = {
         this.timer.context = jsn.context;
       } else {
         if (this.timer.isRunning) {
-          this.timer.addInterval(true);
+          this.timer.addInterval(null, true);
         } else {
-          $SD.api.setTitle(jsn.context, this.timer.pauseTime);
+          this.timer.printRemainingText();
         }
       }
     } else {
-      this.timer = new Timer(jsn.context);
-      $SD.api.setTitle(jsn.context, this.timer.pauseTime);
+      this.timer = new Timer(this.hours, this.minutes, jsn.context);
+      this.timer.printRemainingText();
     }
   },
 
   onDidReceiveSettings: function(jsn) {
-    this.settings = jsn.payload.settings;
-    //TODO
+    this.hours = jsn.payload.settings.hours ?? 8;
+    this.minutes = jsn.payload.settings.minutes ?? 0;
+    const goalTs = this.hours * 3600000 + this.minutes * 60000;
+    if (this.timer.goalTs !== goalTs) {
+      this.timer.goalTs = goalTs;
+      this.timer.printRemainingText();
+    }
   },
 
   onWillDisappear: function(jsn) {
-    this.timer.remInterval();
+    this.timer.remInterval(null, true);
   },
 
   onKeyDown: function (jsn) {
@@ -68,7 +75,6 @@ const action = {
       } else {
         this.timer.start(nowTs);
       }
-      this.doSomeThing(jsn, 'onKeyUp: short press', 'green');
     } else {  // Long Press
       this.timer.reset();
     }
@@ -77,20 +83,25 @@ const action = {
 };
 
 class Timer {
-  context;
+  goalTs;
   timerStartTs;
   pauseStartTs;
-  pauseTime;
   isRunning;
   intervalId;
+  context;
 
-  constructor(context) {
-    this.context = context;
+  constructor(hours, minutes, context) {
+    this.goalTs = hours * 3600000 + minutes * 60000;
     this.timerStartTs = null;
     this.pauseStartTs = null;
-    this.pauseTime = '0:00:00';
     this.isRunning = false;
     this.intervalId = null;
+    this.context = context;
+  }
+
+  getElapsedTs(nowTs = null) {
+    const startTs = this.isRunning ? nowTs ?? Date.now() : this.pauseStartTs ?? this.timerStartTs;
+    return startTs - this.timerStartTs;
   }
 
   start(nowTs) {
@@ -98,54 +109,55 @@ class Timer {
       const pauseElapsed = nowTs - this.pauseStartTs;
       this.timerStartTs += pauseElapsed;
       this.pauseStartTs = null;
-      this.pauseTime = null;
       this.isRunning = true;
-      this.addInterval();
+      this.addInterval(nowTs);
     }
   }
 
   pause(nowTs) {
     if (this.isRunning) {
       this.pauseStartTs = nowTs;
-      this.pauseTime = this.getTimeFromElapsed(nowTs - this.timerStartTs);
       this.isRunning = false;
-      this.remInterval();
+      this.remInterval(nowTs, true);
     }
   }
 
   reset() {
     this.timerStartTs = null;
     this.pauseStartTs = null;
-    this.pauseTime = '0:00:00';
     this.isRunning = false;
-    this.remInterval();
-    $SD.api.setTitle(this.context, this.pauseTime);
+    this.remInterval(null, true);
   }
 
-  addInterval(updateImmediately = false) {
+  addInterval(nowTs = null, updateImmediately = false) {
     if (this.isRunning) {
       if (updateImmediately) {
-        $SD.api.setTitle(this.context, this.getTimeFromElapsed(Date.now() - this.timerStartTs));
+        this.printRemainingText(nowTs);
       }
 
       this.intervalId = setInterval(() =>
-        $SD.api.setTitle(this.context, this.getTimeFromElapsed(Date.now() - this.timerStartTs))
+        this.printRemainingText()
       , 1000);
     }
   }
 
-  remInterval() {
+  remInterval(nowTs = null, updateImmediately = false) {
+    if (updateImmediately) {
+      this.printRemainingText(nowTs);
+    }
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
   }
 
-  getTimeFromElapsed(elapsed) {
-    const totalSecs = Math.floor(elapsed / 1000);
+  printRemainingText(nowTs = null) {
+    const elapsedTs = this.getElapsedTs(nowTs);
+    const totalSecs = Math.floor((this.goalTs - elapsedTs) / 1000);
     const hours = Math.floor(totalSecs / 3600);
     const mins = Math.floor((totalSecs % 3600) / 60);
     const secs = totalSecs % 60;
-    return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    const remainingText = `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    $SD.api.setTitle(this.context, remainingText);
   }
 };

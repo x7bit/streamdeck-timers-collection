@@ -1,15 +1,13 @@
 {
-  "Description": "Use this to create your own plugin",
-  "Name": "Stream Deck Workday Timer",
+  "Description": "Configure the time of your workday and do not work more than necessary",
+  "Name": "Workday Timer",
   "Category": "Templates",
   "com.x7bit.workdaytimer.action": {
-    "Name": "Action",
-    "Tooltip": "This is the only action in this plugin"
+    "Name": "Workday Timer",
+    "Tooltip": "Configure the time of your workday and do not work more than necessary"
   },
   "Localization": {
-    "More info": "More info",
-    "Message": "Message",
-    "Click Me": "Click Me",
-    "Button": "Button"
+    "Hours": "Hours",
+    "Minutes": "Minutes"
   }
 }

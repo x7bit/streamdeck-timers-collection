@@ -1,53 +1,68 @@
 <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui,viewport-fit=cover">
-        <meta name=apple-mobile-web-app-capable content=yes>
-        <meta name=apple-mobile-web-app-status-bar-style content=black>
-        <title>com.x7bit.workdaytimer Property Inspector</title>
-        <link rel="stylesheet" href="css/sdpi.css">
-    </head>
-    <body>
-        <div class="sdpi-wrapper">
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui,viewport-fit=cover">
+    <meta name=apple-mobile-web-app-capable content=yes>
+    <meta name=apple-mobile-web-app-status-bar-style content=black>
+    <title>com.x7bit.workdaytimer Property Inspector</title>
+    <link rel="stylesheet" href="css/sdpi.css">
+  </head>
+  <body>
+    <div class="sdpi-wrapper">
 
-          <!-- DROP HTML-STUFF BELOW -->
+      <!-- DROP HTML-STUFF BELOW -->
 
-          <!--
-            Here we just copied a couple of elements from the PISamples example, which contains
-            a huge collection pre-made HTML-elements for you to use.
-            Important here is (if you plan to communicate from the Property Inspector to the plugin without
-            further programming), that you add an 'id' to an element's control. 
-            This will get the 'key', which is sent to the plugin (or settings), along with the value of
-            the control.
-          -->
+      <!--
+        Here we just copied a couple of elements from the PISamples example, which contains
+        a huge collection pre-made HTML-elements for you to use.
+        Important here is (if you plan to communicate from the Property Inspector to the plugin without
+        further programming), that you add an 'id' to an element's control.
+        This will get the 'key', which is sent to the plugin (or settings), along with the value of
+        the control.
+      -->
 
-            <div class="sdpi-item">
-                <div class="sdpi-item-label">Name</div>
-                <input id="mynameinput" class="sdpi-item-value" type="text" value="" />
-             </div>
+      <div class="sdpi-item">
+        <div class="sdpi-item-label">Hours</div>
+        <input class="sdpi-item-value" id="hours" value="8" required pattern="([1-9]|1[0-5])">
+      </div>
 
-            <div type="textarea" class="sdpi-item">
-                <div class="sdpi-item-label up20" data-localize="Message">Message</div>
-                <div class="sdpi-item-value textarea">
-                  <textarea type="textarea" maxlength="50" id="mymessage" class="three-lines"></textarea>
-                  <label for="mymessage">0/50</label>
-                </div>
-              </div>
+      <div class="sdpi-item">
+        <div class="sdpi-item-label">Minutes</div>
+        <input class="sdpi-item-value" id="minutes" value="0" required pattern="[1-5]?[0-9]">
+      </div>
 
-              <div class="sdpi-item">
-                <div class="sdpi-item-label">Button</div>
-                <button class="sdpi-item-value" id="clickme" value="Click Me" data-localize="Click me">Click Me</button>
-              </div>
+      <!-- END OF SDPI-WRAPPER -->
 
+    </div>
 
-              <!-- END OF SDPI-WRAPPER -->
+    <div class="sdpi-info-label hidden" style="top: -1000;" value=""></div>
 
-        </div>
+    <script src="js/common.js"></script>
+    <script src="js/common_pi.js"></script>
+    <script src="js/index_pi.js"></script>
+    <script>
+      const onlyNumbers = (value, min, max, def) => {
+        value = parseInt(value.replace(/[^0-9]/g, ''));
+        if (!value && value !== 0) {
+          return def;
+        }
+        if (value > max) {
+          return max;
+        }
+        if (value < min) {
+          return min;
+        }
+        return value;
+      };
 
-        <div class="sdpi-info-label hidden" style="top: -1000;" value=""></div>
-        <script src="js/common.js"></script>
-        <script src="js/common_pi.js"></script>
-        <script src="js/index_pi.js"></script>
-    </body>
-    </html>
+      const hoursInput = document.getElementById('hours');
+      hoursInput.oninput = () => hoursInput.value = hoursInput.value.replace(/[^0-9]/g, '');
+      hoursInput.onchange = () => hoursInput.value = onlyNumbers(hoursInput.value, 1, 15, 8);
+
+      const minutesInput = document.getElementById('minutes');
+      minutesInput.oninput = () => minutesInput.value = minutesInput.value.replace(/[^0-9]/g, '');
+      minutesInput.onchange = () => minutesInput.value = onlyNumbers(minutesInput.value, 0, 59, 0);
+    </script>
+  </body>
+</html>

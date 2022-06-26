@@ -8,7 +8,7 @@
           "Image": "action/images/action"
         }
       ],
-      "Tooltip": "This is an example tooltip",
+      "Tooltip": "Configure the time of your workday and do not work more than necessary",
       "UUID": "com.x7bit.workdaytimer.action"
     }
   ],
@@ -16,23 +16,22 @@
   "Author": "x7bit",
   "CodePath": "index.html",
   "PropertyInspectorPath": "propertyinspector/index.html",
-  "Description": "Example description",
-  "Name": "Stream Deck Workday Timer",
+  "Description": "Configure the time of your workday and do not work more than necessary",
+  "Name": "Workday Timer",
   "Icon": "action/images/action",
   "URL": "https://www.elgato.com/en/gaming/stream-deck",
-  "Version": "1.0.1",
+  "Version": "1.0.2",
   "OS": [
     {
-        "Platform": "mac",
-        "MinimumVersion" : "10.11"
+      "Platform": "mac",
+      "MinimumVersion" : "10.11"
     },
     {
-        "Platform": "windows",
-        "MinimumVersion" : "10"
+      "Platform": "windows",
+      "MinimumVersion" : "10"
     }
   ],
-  "Software":
-    {
-        "MinimumVersion" : "4.1"
+  "Software": {
+    "MinimumVersion" : "4.1"
   }
 }
