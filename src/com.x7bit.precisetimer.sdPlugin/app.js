@@ -24,12 +24,14 @@ function connected(jsn) {
 const action = {
   hours: null,
   minutes: null,
+  seconds: null,
   timer: null,
   keyDownMs: null,
 
   onWillAppear: function (jsn) {
-    this.hours = jsn.payload.settings.hours ?? 8;
-    this.minutes = jsn.payload.settings.minutes ?? 0;
+    this.hours = this.getIntegerSetting(jsn, 'hours');
+    this.minutes = this.getIntegerSetting(jsn, 'minutes');
+    this.seconds = this.getIntegerSetting(jsn, 'seconds');
 
     if (this.timer) {
       if (this.timer.context !== jsn.context) {
@@ -45,19 +47,22 @@ const action = {
         }
       }
     } else {
-      this.timer = new CountdownTimer(this.hours, this.minutes, jsn.context);
+      this.timer = new CountdownTimer(this.hours, this.minutes, this.seconds, jsn.context);
     }
   },
 
   onDidReceiveSettings: function(jsn) {
-    this.hours = jsn.payload.settings.hours ?? 8;
-    this.minutes = jsn.payload.settings.minutes ?? 0;
-    const goalSec = this.hours * 3600 + this.minutes * 60;
+    this.hours = this.getIntegerSetting(jsn, 'hours');
+    this.minutes = this.getIntegerSetting(jsn, 'minutes');
+    this.seconds = this.getIntegerSetting(jsn, 'seconds');
+
+    const goalSec = this.hours * 3600 + this.minutes * 60 + this.seconds;
     if (this.timer.goalSec !== goalSec) {
       this.timer.goalSec = goalSec;
-      if (this.timer.isStarted) {
-        this.timer.printRemainingText();
-      }
+    }
+
+    if (this.timer.isStarted) {
+      this.timer.printRemainingText();
     }
   },
 
@@ -87,6 +92,16 @@ const action = {
     }
   },
 
+  getIntegerSetting(jsn, name, defValue = 0) {
+    const settings = jsn.payload.settings ?? {};
+    if (settings.hasOwnProperty(name)) {
+      const value = parseInt(settings[name]);
+      return value === NaN ? defValue : value;
+    } else {
+      return defValue;
+    }
+  }
+
 };
 
 class CountdownTimer {
@@ -99,8 +114,8 @@ class CountdownTimer {
   canvasTimer;
   context;
 
-  constructor(hours, minutes, context) {
-    this.goalSec = hours * 3600 + minutes * 60;
+  constructor(hours, minutes, seconds, context) {
+    this.goalSec = hours * 3600 + minutes * 60 + seconds;
     this.timerStartSec = null;
     this.pauseStartSec = null;
     this.isStarted = false;
@@ -183,8 +198,9 @@ class CountdownTimer {
       const hours = Math.floor(totalSec / 3600);
       const mins = Math.floor((totalSec % 3600) / 60);
       const secs = totalSec % 60;
+      const isEven = (secs % 2) === 0;
       const remainingText = `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-      this.canvasTimer.drawRemainingText(this.context, remainingText, this.isRunning);
+      this.canvasTimer.drawRemainingText(this.context, remainingText, this.isRunning, isEven);
     } else {
       this.reset();
       $SD.api.showOk(this.context);
@@ -196,6 +212,10 @@ class CountdownTimer {
 class CanvasTimer {
   canvas;
   ctx;
+  bColor;
+  fColor;
+  textColor;
+  textPauseColor;
 
   constructor() {
     this.canvas = document.createElement('canvas');
@@ -203,17 +223,18 @@ class CanvasTimer {
     this.canvas.height = 144;
     this.ctx = this.canvas.getContext('2d');
     this.bColor = '#0a1423';
-    this.frColor = '#5881e0';  //#3d6ee0
-    this.fpColor = '#606060';
+    this.fColor = '#3d6ee0';
+    this.textColor = '#5881e0';
+    this.textPauseColor = '#606060';
   }
 
-  drawRemainingText(context, remainingText, isRunning) {
+  drawRemainingText(context, remainingText, isRunning, isEven) {
     //Background
     const img = document.getElementById('timer-running');
     this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
     //Foreground
     const fSize = remainingText.length > 8 ? 30 - remainingText.length / 2 : 32;
-    this.ctx.fillStyle = isRunning ? this.frColor : this.fpColor;
+    this.ctx.fillStyle = isRunning ? this.textColor : this.textPauseColor;
     this.ctx.font = `${fSize}px arial`;
     this.ctx.textBaseline = 'middle';
     this.ctx.textAlign = 'center';
