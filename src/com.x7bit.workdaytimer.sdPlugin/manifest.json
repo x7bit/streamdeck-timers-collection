@@ -20,7 +20,7 @@
   "Name": "Workday Timer",
   "Icon": "action/images/action",
   "URL": "https://www.elgato.com/en/gaming/stream-deck",
-  "Version": "1.2.0",
+  "Version": "1.2.1",
   "OS": [
     {
       "Platform": "mac",

@@ -40,6 +40,8 @@ const action = {
           this.timer.addInterval(null, true);
         } else if (this.timer.isStarted) {
           this.timer.printRemainingText();
+        } else {
+          $SD.api.setImage(this.context);
         }
       }
     } else {
@@ -65,12 +67,15 @@ const action = {
 
   onKeyDown: function (jsn) {
     this.keyDownMs = Date.now();
+    if (this.timer.isRunning) {
+      this.timer.remInterval();
+    }
   },
 
   onKeyUp: function (jsn) {
     const nowMs = Date.now();
     const keyElapsedMs = nowMs - this.keyDownMs;
-    if (keyElapsedMs < 1500) {  // Short Press
+    if (keyElapsedMs < 2000) {  // Short Press
       const nowSec = Math.round(nowMs / 1000);
       if (this.timer.isRunning) {
         this.timer.pause(nowSec);
