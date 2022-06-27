@@ -1,0 +1,13 @@
+{
+  "Description": "Temporizador preciso y pausable, especialmente indicado para periodos largos",
+  "Name": "Temporizador Preciso",
+  "Category": "Templates",
+  "com.x7bit.precisetimer.action": {
+    "Name": "Temporizador Preciso",
+    "Tooltip": "Temporizador preciso y pausable, especialmente indicado para periodos largos"
+  },
+  "Localization": {
+    "Hours": "Horas",
+    "Minutes": "Minutos"
+  }
+}

@@ -4,19 +4,19 @@ function connected(jsn) {
   debugLog('Connected Plugin:', jsn);
 
   // Subscribe to the willAppear and other events
-  $SD.on('com.x7bit.workdaytimer.action.willAppear', jsonObj =>
+  $SD.on('com.x7bit.precisetimer.action.willAppear', jsonObj =>
     action.onWillAppear(jsonObj)
   );
-  $SD.on('com.x7bit.workdaytimer.action.didReceiveSettings', jsonObj =>
+  $SD.on('com.x7bit.precisetimer.action.didReceiveSettings', jsonObj =>
     action.onDidReceiveSettings(jsonObj)
   );
-  $SD.on('com.x7bit.workdaytimer.action.willDisappear', jsonObj =>
+  $SD.on('com.x7bit.precisetimer.action.willDisappear', jsonObj =>
     action.onWillDisappear(jsonObj)
   );
-  $SD.on('com.x7bit.workdaytimer.action.keyDown', (jsonObj) =>
+  $SD.on('com.x7bit.precisetimer.action.keyDown', (jsonObj) =>
     action.onKeyDown(jsonObj)
   );
-  $SD.on('com.x7bit.workdaytimer.action.keyUp', jsonObj =>
+  $SD.on('com.x7bit.precisetimer.action.keyUp', jsonObj =>
     action.onKeyUp(jsonObj)
   );
 };

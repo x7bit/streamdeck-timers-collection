@@ -2,25 +2,25 @@
   "Actions": [
     {
       "Icon": "action/images/actionimage",
-      "Name": "Workday Timer",
+      "Name": "Precise Timer",
       "States": [
         {
           "Image": "action/images/action"
         }
       ],
-      "Tooltip": "Configure the time of your workday and do not work more than necessary",
-      "UUID": "com.x7bit.workdaytimer.action"
+      "Tooltip": "Precise and pauseable timer, especially suitable for long periods",
+      "UUID": "com.x7bit.precisetimer.action"
     }
   ],
   "SDKVersion": 2,
   "Author": "x7bit",
   "CodePath": "index.html",
   "PropertyInspectorPath": "propertyinspector/index.html",
-  "Description": "Configure the time of your workday and do not work more than necessary",
-  "Name": "Workday Timer",
+  "Description": "Precise and pauseable timer, especially suitable for long periods",
+  "Name": "Precise Timer",
   "Icon": "action/images/action",
-  "URL": "https://www.elgato.com/en/gaming/stream-deck",
-  "Version": "1.2.1",
+  "URL": "https://github.com/x7bit/streamdeck-precise-timer",
+  "Version": "1.2.2",
   "OS": [
     {
       "Platform": "mac",

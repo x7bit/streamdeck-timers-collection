@@ -46,11 +46,11 @@ Use your utility of choice (or your terminal) to do a full string replace using:
 
 Replace all occurences of:
 
-`com.x7bit.workdaytimer` with `your.identifier.plugin`
+`com.x7bit.precisetimer` with `your.identifier.plugin`
 
 and:
 
-`Stream Deck Workday Timer` with `Your Plugin Name`
+`Stream Deck Precise Timer` with `Your Plugin Name`
 
 Fire up your preferred code-editor and open `app.js`.
 
