@@ -24,7 +24,7 @@
 
       <div class="sdpi-item">
         <div class="sdpi-item-label">Hours</div>
-        <input class="sdpi-item-value" id="hours" value="8" required pattern="([1-9]|1[0-5])">
+        <input class="sdpi-item-value" id="hours" value="8" required pattern="([0-9]|1[0-5])">
       </div>
 
       <div class="sdpi-item">
@@ -58,7 +58,7 @@
 
       const hoursInput = document.getElementById('hours');
       hoursInput.oninput = () => hoursInput.value = hoursInput.value.replace(/[^0-9]/g, '');
-      hoursInput.onchange = () => hoursInput.value = onlyNumbers(hoursInput.value, 1, 15, 8);
+      hoursInput.onchange = () => hoursInput.value = onlyNumbers(hoursInput.value, 0, 15, 8);
 
       const minutesInput = document.getElementById('minutes');
       minutesInput.oninput = () => minutesInput.value = minutesInput.value.replace(/[^0-9]/g, '');

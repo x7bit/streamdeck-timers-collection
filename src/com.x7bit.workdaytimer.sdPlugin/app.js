@@ -38,13 +38,12 @@ const action = {
       } else {
         if (this.timer.isRunning) {
           this.timer.addInterval(null, true);
-        } else {
+        } else if (this.timer.isStarted) {
           this.timer.printRemainingText();
         }
       }
     } else {
       this.timer = new CountdownTimer(this.hours, this.minutes, jsn.context);
-      this.timer.printRemainingText();
     }
   },
 
@@ -54,7 +53,9 @@ const action = {
     const goalSec = this.hours * 3600 + this.minutes * 60;
     if (this.timer.goalSec !== goalSec) {
       this.timer.goalSec = goalSec;
-      this.timer.printRemainingText();
+      if (this.timer.isStarted) {
+        this.timer.printRemainingText();
+      }
     }
   },
 
@@ -87,16 +88,20 @@ class CountdownTimer {
   goalSec;
   timerStartSec;
   pauseStartSec;
+  isStarted;
   isRunning;
   intervalId;
+  canvasTimer;
   context;
 
   constructor(hours, minutes, context) {
     this.goalSec = hours * 3600 + minutes * 60;
     this.timerStartSec = null;
     this.pauseStartSec = null;
+    this.isStarted = false;
     this.isRunning = false;
     this.intervalId = null;
+    this.canvasTimer = new CanvasTimer();
     this.context = context;
   }
 
@@ -111,11 +116,16 @@ class CountdownTimer {
 
   start(nowSec) {
     if (!this.isRunning) {
-      const pauseElapsedSec = nowSec - this.pauseStartSec;
-      this.timerStartSec += pauseElapsedSec;
-      this.pauseStartSec = null;
-      this.isRunning = true;
-      this.addInterval(nowSec);
+      if (this.goalSec > 0) {
+        const pauseElapsedSec = nowSec - this.pauseStartSec;
+        this.timerStartSec += pauseElapsedSec;
+        this.pauseStartSec = null;
+        this.isStarted = true;
+        this.isRunning = true;
+        this.addInterval(nowSec, true);
+      } else {
+        $SD.api.showAlert(this.context);
+      }
     }
   }
 
@@ -130,8 +140,10 @@ class CountdownTimer {
   reset() {
     this.timerStartSec = null;
     this.pauseStartSec = null;
+    this.isStarted = false;
     this.isRunning = false;
-    this.remInterval(null, true);
+    this.remInterval();
+    $SD.api.setImage(this.context);
   }
 
   addInterval(nowSec = null, updateImmediately = false) {
@@ -142,7 +154,7 @@ class CountdownTimer {
 
       setTimeout(() => {
         this.printRemainingText();
-      }, 500);
+      }, 10);
       this.intervalId = setInterval(() => {
         this.printRemainingText();
       }, 1000);
@@ -162,10 +174,50 @@ class CountdownTimer {
   printRemainingText(nowSec = null) {
     const elapsedSec = this.getElapsedSec(nowSec);
     const totalSec = this.goalSec - elapsedSec;
-    const hours = Math.floor(totalSec / 3600);
-    const mins = Math.floor((totalSec % 3600) / 60);
-    const secs = totalSec % 60;
-    const remainingText = `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    $SD.api.setTitle(this.context, remainingText);
+    if (totalSec > 0) {
+      const hours = Math.floor(totalSec / 3600);
+      const mins = Math.floor((totalSec % 3600) / 60);
+      const secs = totalSec % 60;
+      const remainingText = `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      this.canvasTimer.drawRemainingText(this.context, remainingText, this.isRunning);
+    } else {
+      this.reset();
+      $SD.api.showOk(this.context);
+      document.getElementById('audio-alarm').play();
+    }
+  }
+};
+
+class CanvasTimer {
+  canvas;
+  ctx;
+
+  constructor() {
+    this.canvas = document.createElement('canvas');
+    this.canvas.width = 144;
+    this.canvas.height = 144;
+    this.ctx = this.canvas.getContext('2d');
+    this.bColor = '#0a1423';
+    this.frColor = '#5881e0';  //#3d6ee0
+    this.fpColor = '#606060';
+  }
+
+  drawRemainingText(context, remainingText, isRunning) {
+    //Background
+    const img = document.getElementById('timer-running');
+    this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+    //Foreground
+    const fSize = remainingText.length > 8 ? 30 - remainingText.length / 2 : 32;
+    this.ctx.fillStyle = isRunning ? this.frColor : this.fpColor;
+    this.ctx.font = `${fSize}px arial`;
+    this.ctx.textBaseline = 'middle';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText(
+      remainingText,
+      this.ctx.canvas.width / 2,
+      (this.ctx.canvas.height + fSize / 3) / 2
+    );
+    //Draw Canvas
+    $SD.api.setImage(context, this.canvas.toDataURL());
   }
 };
