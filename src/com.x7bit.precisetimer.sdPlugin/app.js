@@ -7,11 +7,11 @@ function connected(jsn) {
   $SD.on('com.x7bit.precisetimer.action.willAppear', jsonObj =>
     action.onWillAppear(jsonObj)
   );
-  $SD.on('com.x7bit.precisetimer.action.didReceiveSettings', jsonObj =>
-    action.onDidReceiveSettings(jsonObj)
-  );
   $SD.on('com.x7bit.precisetimer.action.willDisappear', jsonObj =>
     action.onWillDisappear(jsonObj)
+  );
+  $SD.on('com.x7bit.precisetimer.action.didReceiveSettings', jsonObj =>
+    action.onDidReceiveSettings(jsonObj)
   );
   $SD.on('com.x7bit.precisetimer.action.keyDown', (jsonObj) =>
     action.onKeyDown(jsonObj)
@@ -22,62 +22,56 @@ function connected(jsn) {
 };
 
 const action = {
-  hours: null,
-  minutes: null,
-  seconds: null,
   timer: null,
   keyDownMs: null,
 
-  onWillAppear: function (jsn) {
-    this.hours = this.getIntegerSetting(jsn, 'hours');
-    this.minutes = this.getIntegerSetting(jsn, 'minutes');
-    this.seconds = this.getIntegerSetting(jsn, 'seconds');
-
+  onWillAppear(jsn) {
     if (this.timer) {
       if (this.timer.context !== jsn.context) {
         this.timer.reset();
         this.timer.context = jsn.context;
+      } else if (this.timer.isStarted()) {
+        this.timer.addInterval(true);
       } else {
-        if (this.timer.isRunning) {
-          this.timer.addInterval(null, true);
-        } else if (this.timer.timerStartMs) {  // Paused, but started
-          this.timer.drawRemainingText();
-        } else {
-          $SD.api.setImage(this.context);
-        }
+        $SD.api.setImage(this.context);
       }
     } else {
-      this.timer = new CountdownTimer(this.hours, this.minutes, this.seconds, jsn.context);
+      const hours = this.getIntegerSetting(jsn, 'hours');
+      const minutes = this.getIntegerSetting(jsn, 'minutes');
+      const seconds = this.getIntegerSetting(jsn, 'seconds');
+      this.timer = new CountdownTimer(hours, minutes, seconds, jsn.context);
     }
   },
 
-  onDidReceiveSettings: function(jsn) {
-    this.hours = this.getIntegerSetting(jsn, 'hours');
-    this.minutes = this.getIntegerSetting(jsn, 'minutes');
-    this.seconds = this.getIntegerSetting(jsn, 'seconds');
+  onWillDisappear(jsn) {
+    if (this.timer && this.timer.isStarted()) {
+      this.timer.remInterval(true);
+    }
+  },
 
-    const goalSec = this.hours * 3600 + this.minutes * 60 + this.seconds;
+  onDidReceiveSettings(jsn) {
+    const hours = this.getIntegerSetting(jsn, 'hours');
+    const minutes = this.getIntegerSetting(jsn, 'minutes');
+    const seconds = this.getIntegerSetting(jsn, 'seconds');
+
+    const goalSec = hours * 3600 + minutes * 60 + seconds;
     if (this.timer.goalSec !== goalSec) {
       this.timer.goalSec = goalSec;
     }
 
-    if (this.timer.timerStartMs) {  // If started
+    if (this.timer.isStarted()) {
       this.timer.drawRemainingText();
     }
   },
 
-  onWillDisappear: function(jsn) {
-    this.timer.remInterval(null, true);
-  },
-
-  onKeyDown: function (jsn) {
+  onKeyDown(jsn) {
     this.keyDownMs = Date.now();
     if (this.timer.isRunning) {
-      this.timer.remInterval();
+      this.timer.remInterval(false);
     }
   },
 
-  onKeyUp: function (jsn) {
+  onKeyUp(jsn) {
     const nowMs = Date.now();
     const keyElapsedMs = nowMs - this.keyDownMs;
     if (keyElapsedMs < 2000) {  // Short Press
@@ -99,8 +93,7 @@ const action = {
     } else {
       return defValue;
     }
-  }
-
+  },
 };
 
 class CountdownTimer {
@@ -122,6 +115,10 @@ class CountdownTimer {
     this.context = context;
   }
 
+  isStarted() {
+    return !!this.timerStartMs;
+  }
+
   getElapsedSec(nowMs = null) {
     const startMs = (
       this.isRunning ?
@@ -134,11 +131,15 @@ class CountdownTimer {
   start(nowMs) {
     if (!this.isRunning) {
       if (this.goalSec > 0) {
-        const pauseElapsedMs = nowMs - this.pauseStartMs;
-        this.timerStartMs += pauseElapsedMs;
+        if (this.isStarted()) {
+          const pauseElapsedMs = nowMs - this.pauseStartMs;
+          this.timerStartMs += pauseElapsedMs;
+        } else {
+          this.timerStartMs = nowMs;
+        }
         this.pauseStartMs = null;
         this.isRunning = true;
-        this.addInterval(nowMs, true);
+        this.addInterval(true, nowMs);
       } else {
         $SD.api.showAlert(this.context);
       }
@@ -149,7 +150,7 @@ class CountdownTimer {
     if (this.isRunning) {
       this.pauseStartMs = nowMs;
       this.isRunning = false;
-      this.remInterval(nowMs, true);
+      this.remInterval(true, nowMs);
     }
   }
 
@@ -157,26 +158,28 @@ class CountdownTimer {
     this.timerStartMs = null;
     this.pauseStartMs = null;
     this.isRunning = false;
-    this.remInterval();
+    this.remInterval(false);
     $SD.api.setImage(this.context);
   }
 
-  addInterval(nowMs = null, updateImmediately = false) {
+  addInterval(updateImmediately, nowMs = null) {
     if (this.isRunning) {
       if (updateImmediately) {
         this.drawRemainingText(nowMs);
       }
 
-      setTimeout(() => {
-        this.drawRemainingText();
-      }, 10);
-      this.intervalId = setInterval(() => {
-        this.drawRemainingText();
-      }, 1000);
+      if (!this.intervalId) {
+        setTimeout(() => {
+          this.drawRemainingText();
+        }, 10);
+        this.intervalId = setInterval(() => {
+          this.drawRemainingText();
+        }, 1000);
+      }
     }
   }
 
-  remInterval(nowMs = null, updateImmediately = false) {
+  remInterval(updateImmediately, nowMs = null) {
     if (updateImmediately) {
       this.drawRemainingText(nowMs);
     }

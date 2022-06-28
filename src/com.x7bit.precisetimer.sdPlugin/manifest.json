@@ -20,7 +20,7 @@
   "Name": "Precise Timer",
   "Icon": "action/images/action",
   "URL": "https://github.com/x7bit/streamdeck-precise-timer",
-  "Version": "1.4.0",
+  "Version": "1.4.1",
   "OS": [
     {
       "Platform": "mac",
