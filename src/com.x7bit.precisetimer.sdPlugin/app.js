@@ -40,7 +40,7 @@ const action = {
       } else {
         if (this.timer.isRunning) {
           this.timer.addInterval(null, true);
-        } else if (this.timer.isStarted) {
+        } else if (this.timer.timerStartMs) {  // Paused, but started
           this.timer.drawRemainingText();
         } else {
           $SD.api.setImage(this.context);
@@ -61,7 +61,7 @@ const action = {
       this.timer.goalSec = goalSec;
     }
 
-    if (this.timer.isStarted) {
+    if (this.timer.timerStartMs) {  // If started
       this.timer.drawRemainingText();
     }
   },
@@ -81,11 +81,10 @@ const action = {
     const nowMs = Date.now();
     const keyElapsedMs = nowMs - this.keyDownMs;
     if (keyElapsedMs < 2000) {  // Short Press
-      const nowSec = Math.round(nowMs / 1000);
       if (this.timer.isRunning) {
-        this.timer.pause(nowSec);
+        this.timer.pause(nowMs);
       } else {
-        this.timer.start(nowSec);
+        this.timer.start(nowMs);
       }
     } else {  // Long Press
       this.timer.reset();
@@ -106,9 +105,8 @@ const action = {
 
 class CountdownTimer {
   goalSec;
-  timerStartSec;
-  pauseStartSec;
-  isStarted;
+  timerStartMs;
+  pauseStartMs;
   isRunning;
   intervalId;
   canvasTimer;
@@ -116,60 +114,57 @@ class CountdownTimer {
 
   constructor(hours, minutes, seconds, context) {
     this.goalSec = hours * 3600 + minutes * 60 + seconds;
-    this.timerStartSec = null;
-    this.pauseStartSec = null;
-    this.isStarted = false;
+    this.timerStartMs = null;
+    this.pauseStartMs = null;
     this.isRunning = false;
     this.intervalId = null;
     this.canvasTimer = new CanvasTimer();
     this.context = context;
   }
 
-  getElapsedSec(nowSec = null) {
-    const startSec = (
+  getElapsedSec(nowMs = null) {
+    const startMs = (
       this.isRunning ?
-      nowSec ?? Math.round(Date.now() / 1000) :
-      this.pauseStartSec ?? this.timerStartSec
+      nowMs ?? Date.now() :
+      this.pauseStartMs ?? this.timerStartMs
     );
-    return startSec - this.timerStartSec;
+    return Math.round((startMs - this.timerStartMs) / 1000);
   }
 
-  start(nowSec) {
+  start(nowMs) {
     if (!this.isRunning) {
       if (this.goalSec > 0) {
-        const pauseElapsedSec = nowSec - this.pauseStartSec;
-        this.timerStartSec += pauseElapsedSec;
-        this.pauseStartSec = null;
-        this.isStarted = true;
+        const pauseElapsedMs = nowMs - this.pauseStartMs;
+        this.timerStartMs += pauseElapsedMs;
+        this.pauseStartMs = null;
         this.isRunning = true;
-        this.addInterval(nowSec, true);
+        this.addInterval(nowMs, true);
       } else {
         $SD.api.showAlert(this.context);
       }
     }
   }
 
-  pause(nowSec) {
+  pause(nowMs) {
     if (this.isRunning) {
-      this.pauseStartSec = nowSec;
+      this.pauseStartMs = nowMs;
       this.isRunning = false;
-      this.remInterval(nowSec, true);
+      this.remInterval(nowMs, true);
     }
   }
 
   reset() {
-    this.timerStartSec = null;
-    this.pauseStartSec = null;
-    this.isStarted = false;
+    this.timerStartMs = null;
+    this.pauseStartMs = null;
     this.isRunning = false;
     this.remInterval();
     $SD.api.setImage(this.context);
   }
 
-  addInterval(nowSec = null, updateImmediately = false) {
+  addInterval(nowMs = null, updateImmediately = false) {
     if (this.isRunning) {
       if (updateImmediately) {
-        this.drawRemainingText(nowSec);
+        this.drawRemainingText(nowMs);
       }
 
       setTimeout(() => {
@@ -181,9 +176,9 @@ class CountdownTimer {
     }
   }
 
-  remInterval(nowSec = null, updateImmediately = false) {
+  remInterval(nowMs = null, updateImmediately = false) {
     if (updateImmediately) {
-      this.drawRemainingText(nowSec);
+      this.drawRemainingText(nowMs);
     }
     if (this.intervalId) {
       clearInterval(this.intervalId);
@@ -191,8 +186,8 @@ class CountdownTimer {
     }
   }
 
-  drawRemainingText(nowSec = null) {
-    const elapsedSec = this.getElapsedSec(nowSec);
+  drawRemainingText(nowMs = null) {
+    const elapsedSec = this.getElapsedSec(nowMs);
     if (elapsedSec < this.goalSec) {
       this.canvasTimer.drawTimer(this.context, elapsedSec, this.goalSec, this.isRunning);
     } else {
