@@ -89,7 +89,7 @@ const action = {
     const settings = jsn.payload.settings ?? {};
     if (settings.hasOwnProperty(name)) {
       const value = parseInt(settings[name]);
-      return value === NaN ? defValue : value;
+      return isNaN(value) ? defValue : value;
     } else {
       return defValue;
     }

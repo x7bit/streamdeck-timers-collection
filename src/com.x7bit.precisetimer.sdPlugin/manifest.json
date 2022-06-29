@@ -15,12 +15,12 @@
   "SDKVersion": 2,
   "Author": "x7bit",
   "CodePath": "index.html",
-  "PropertyInspectorPath": "propertyinspector/index.html",
+  "PropertyInspectorPath": "propertyinspector/index_pi.html",
   "Description": "Precise and pauseable timer, especially suitable for long periods",
   "Name": "Precise Timer",
   "Icon": "action/images/action",
   "URL": "https://github.com/x7bit/streamdeck-precise-timer",
-  "Version": "1.4.1",
+  "Version": "1.4.2",
   "OS": [
     {
       "Platform": "mac",
