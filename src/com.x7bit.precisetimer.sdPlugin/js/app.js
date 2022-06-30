@@ -24,6 +24,7 @@ function connected(jsn) {
 const action = {
   timer: null,
   keyDownMs: null,
+  resetTimeoutId : null,
 
   onWillAppear(jsn) {
     if (this.timer) {
@@ -66,12 +67,19 @@ const action = {
 
   onKeyDown(jsn) {
     this.keyDownMs = Date.now();
+    this.resetTimeoutId = setTimeout(() => {
+      this.drawClearImage(jsn);
+      $SD.api.showAlert(jsn.context);
+    }, 2000);
     if (this.timer.isRunning) {
       this.timer.remInterval(false);
     }
   },
 
   onKeyUp(jsn) {
+    clearTimeout(this.resetTimeoutId);
+    this.resetTimeoutId = null;
+
     const nowMs = Date.now();
     const keyElapsedMs = nowMs - this.keyDownMs;
     if (keyElapsedMs < 2000) {  // Short Press
@@ -93,6 +101,17 @@ const action = {
     } else {
       return defValue;
     }
+  },
+
+  drawClearImage(jsn) {
+    this.canvas = document.createElement('canvas');
+    this.canvas.width = 144;
+    this.canvas.height = 144;
+    this.ctx = this.canvas.getContext('2d');
+
+    const img = document.getElementById('clear-bg');
+    this.ctx.drawImage(img, 0, 0, 144, 144);
+    $SD.api.setImage(jsn.context, this.canvas.toDataURL('image/png'));
   },
 };
 
@@ -233,7 +252,7 @@ class CanvasTimer {
       }
     }
     //Draw Canvas
-    $SD.api.setImage(context, this.canvas.toDataURL());
+    $SD.api.setImage(context, this.canvas.toDataURL('image/png'));
   }
 
   getRemainingText(elapsedSec, goalSec) {
