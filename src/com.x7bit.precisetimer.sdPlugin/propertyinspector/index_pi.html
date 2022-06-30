@@ -37,6 +37,12 @@
         <input class="sdpi-item-value" id="seconds" required pattern="[1-5]?[0-9]">
       </div>
 
+      <div class="sdpi-item">
+        <div class="sdpi-item-label">Links</div>
+        <button class="sdpi-item-value" id="readme-button">Readme</button>
+        <button class="sdpi-item-value" id="changelog-button">Changelog</button>
+   </div>
+
       <!-- END OF SDPI-WRAPPER -->
 
     </div>
@@ -72,6 +78,12 @@
       const secondsInput = document.getElementById('seconds');
       secondsInput.oninput = () => secondsInput.value = secondsInput.value.replace(/[^0-9]/g, '');
       secondsInput.onchange = () => secondsInput.value = onlyNumbers(secondsInput.value, 0, 59);
+
+      const readmeButton = document.getElementById('readme-button');
+      readmeButton.onclick = () => $SD.api.openUrl($SD.uuid, 'https://github.com/x7bit/streamdeck-precise-timer/blob/main/README.md');
+
+      const changelogButton = document.getElementById('changelog-button');
+      changelogButton.onclick = () => $SD.api.openUrl($SD.uuid, 'https://github.com/x7bit/streamdeck-precise-timer/blob/main/changelog.md');
     </script>
   </body>
 </html>
