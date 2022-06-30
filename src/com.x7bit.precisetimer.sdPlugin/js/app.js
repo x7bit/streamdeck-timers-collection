@@ -167,14 +167,8 @@ class CountdownTimer {
       if (updateImmediately) {
         this.drawRemainingText(nowMs);
       }
-
       if (!this.intervalId) {
-        setTimeout(() => {
-          this.drawRemainingText();
-        }, 10);
-        this.intervalId = setInterval(() => {
-          this.drawRemainingText();
-        }, 1000);
+        this.intervalId = setInterval(() => this.drawRemainingText(), 1000);
       }
     }
   }

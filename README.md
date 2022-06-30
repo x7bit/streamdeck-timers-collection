@@ -5,9 +5,9 @@ The `Precise Timer` is a Javascript plugin for [Stream Deck](https://developer.e
 
 `Precise Timer` requires Stream Deck 4.1 or later.
 
-# Description
+## Description
 
-Precise and pauseable timer, especially suitable for long periods. Since the default timer (from the "Stream Deck" category) is quite inaccurate for long periods, the `Precise Timer` plugin was developed with the idea of configuring and measuring the time of a workday and not to work more than necessary. To do this, the plugin saves the system time when the timer starts, and calculates the difference. This ensures that the measurement is accurate even when the timer is set to many hours.
+Precise and pauseable timer, especially suitable for long periods. Since the default timer (from the *Stream Deck* category) is quite inaccurate for periods of many hours, the `Precise Timer` plugin was developed with the idea of using it for long periods, such as workdays. To do this, the plugin saves the system time when the timer starts, and calculates the difference. This ensures that the measurement is accurate even when the timer is set to many hours.
 
 ## Features:
 
@@ -15,12 +15,19 @@ Precise and pauseable timer, especially suitable for long periods. Since the def
 - Resettable: press the key for more than 2 seconds to reset it
 - Configurable: you can configure hours, minutes and seconds in the *Property Inspector*
 
-# Localization
+## Localization
 
-The `Precise Timer` plugin is localized to English and Spanish. If you want to help localize it to other languages, these are the strings to translate:
+The `Precise Timer` plugin is localized to *English* and *Spanish*. If you want to help localize it to other languages, these are the strings to translate:
 
 - `Precise Timer`
 - `Precise and pauseable timer, especially suitable for long periods`
 - `Hours`
 - `Minutes`
 - `Seconds`
+
+## Thanks
+
+- **[QuakeBert](https://www.reddit.com/user/QuakeBert/)**: for the suggestion of using the `timers.js` from [this repo](https://github.com/elgatosf/streamdeck-timerfix/blob/master/com.streamdeck.timerfix.sdPlugin/js/timers.js)
+- **[elgatosf](https://github.com/elgatosf)**: for provide the plugin template and timerfix repos:
+    - https://github.com/elgatosf/streamdeck-plugintemplate
+    - https://github.com/elgatosf/streamdeck-timerfix
