@@ -14,6 +14,7 @@ Precise and pauseable timer, especially suitable for long periods. Since the def
 - Pauseable: press the key to pause/resume it
 - Resettable: press the key for more than 2 seconds to reset it
 - Configurable: you can configure hours, minutes and seconds in the *Property Inspector*
+- Cross-platform: macOS, Windows
 
 ## Localization
 
