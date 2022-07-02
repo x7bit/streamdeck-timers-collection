@@ -1,18 +1,18 @@
-### 1.52
+### 1.5.2
 - Readme and Changelog buttons in *Property Inspector*
 
-### 1.51
+### 1.5.1
 - Long press indicator
 
-### 1.50
+### 1.5.0
 - Much better setInterval timing with the use of https://github.com/elgatosf/streamdeck-timerfix
 
-### 1.42
+### 1.4.2
 - Small bug fixes
 
-### 1.41
+### 1.4.1
 - Small bug fixes
 
-### 1.40
+### 1.4.0
 - First stable version
 - Canvas rendering with animation

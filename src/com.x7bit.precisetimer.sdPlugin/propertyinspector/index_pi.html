@@ -52,38 +52,5 @@
     <script src="../js/common.js"></script>
     <script src="js/common_pi.js"></script>
     <script src="js/index_pi.js"></script>
-    <script>
-      const onlyNumbers = (value, min, max) => {
-        value = parseInt(value.replace(/[^0-9]/g, ''));
-        if (isNaN(value)) {
-          return 0;
-        }
-        if (value > max) {
-          return max;
-        }
-        if (value < min) {
-          return min;
-        }
-        return value;
-      };
-
-      const hoursInput = document.getElementById('hours');
-      hoursInput.oninput = () => hoursInput.value = hoursInput.value.replace(/[^0-9]/g, '');
-      hoursInput.onchange = () => hoursInput.value = onlyNumbers(hoursInput.value, 0, 15);
-
-      const minutesInput = document.getElementById('minutes');
-      minutesInput.oninput = () => minutesInput.value = minutesInput.value.replace(/[^0-9]/g, '');
-      minutesInput.onchange = () => minutesInput.value = onlyNumbers(minutesInput.value, 0, 59);
-
-      const secondsInput = document.getElementById('seconds');
-      secondsInput.oninput = () => secondsInput.value = secondsInput.value.replace(/[^0-9]/g, '');
-      secondsInput.onchange = () => secondsInput.value = onlyNumbers(secondsInput.value, 0, 59);
-
-      const readmeButton = document.getElementById('readme-button');
-      readmeButton.onclick = () => $SD.api.openUrl($SD.uuid, 'https://github.com/x7bit/streamdeck-precise-timer/blob/main/README.md');
-
-      const changelogButton = document.getElementById('changelog-button');
-      changelogButton.onclick = () => $SD.api.openUrl($SD.uuid, 'https://github.com/x7bit/streamdeck-precise-timer/blob/main/changelog.md');
-    </script>
   </body>
 </html>
