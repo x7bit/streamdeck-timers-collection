@@ -1,3 +1,6 @@
+### 1.5.3
+- Fix alarm not sounding when timer is not visible
+
 ### 1.5.2
 - Readme and Changelog buttons in *Property Inspector*
 

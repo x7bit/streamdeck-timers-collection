@@ -31,10 +31,9 @@ const action = {
       if (this.timer.context !== jsn.context) {
         this.timer.reset();
         this.timer.context = jsn.context;
-      } else if (this.timer.isStarted()) {
-        this.timer.addInterval(true);
       } else {
-        $SD.api.setImage(this.context);
+        this.timer.isRenderFrozen = false;
+        this.timer.drawRemainingText();
       }
     } else {
       const hours = this.getIntegerSetting(jsn, 'hours');
@@ -45,8 +44,8 @@ const action = {
   },
 
   onWillDisappear(jsn) {
-    if (this.timer && this.timer.isStarted()) {
-      this.timer.remInterval(true);
+    if (this.timer) {
+      this.timer.isRenderFrozen = true;
     }
   },
 
@@ -58,9 +57,6 @@ const action = {
     const goalSec = hours * 3600 + minutes * 60 + seconds;
     if (this.timer.goalSec !== goalSec) {
       this.timer.goalSec = goalSec;
-    }
-
-    if (this.timer.isStarted()) {
       this.timer.drawRemainingText();
     }
   },
@@ -71,14 +67,13 @@ const action = {
       this.drawClearImage(jsn);
       $SD.api.showAlert(jsn.context);
     }, 2000);
-    if (this.timer.isRunning) {
-      this.timer.remInterval(false);
-    }
+    this.timer.isRenderFrozen = true;
   },
 
   onKeyUp(jsn) {
     clearTimeout(this.resetTimeoutId);
     this.resetTimeoutId = null;
+    this.timer.isRenderFrozen = false;
 
     const nowMs = Date.now();
     const keyElapsedMs = nowMs - this.keyDownMs;
@@ -120,6 +115,7 @@ class CountdownTimer {
   timerStartMs;
   pauseStartMs;
   isRunning;
+  isRenderFrozen;
   intervalId;
   canvasTimer;
   context;
@@ -129,6 +125,7 @@ class CountdownTimer {
     this.timerStartMs = null;
     this.pauseStartMs = null;
     this.isRunning = false;
+    this.isRenderFrozen = false;
     this.intervalId = null;
     this.canvasTimer = new CanvasTimer();
     this.context = context;
@@ -158,7 +155,8 @@ class CountdownTimer {
         }
         this.pauseStartMs = null;
         this.isRunning = true;
-        this.addInterval(true, nowMs);
+        this.drawRemainingText(nowMs);
+        this.addInterval();
       } else {
         $SD.api.showAlert(this.context);
       }
@@ -169,7 +167,8 @@ class CountdownTimer {
     if (this.isRunning) {
       this.pauseStartMs = nowMs;
       this.isRunning = false;
-      this.remInterval(true, nowMs);
+      this.drawRemainingText(nowMs);
+      this.remInterval();
     }
   }
 
@@ -177,25 +176,20 @@ class CountdownTimer {
     this.timerStartMs = null;
     this.pauseStartMs = null;
     this.isRunning = false;
-    this.remInterval(false);
+    this.isRenderFrozen = false;
+    this.remInterval();
     $SD.api.setImage(this.context);
   }
 
-  addInterval(updateImmediately, nowMs = null) {
+  addInterval() {
     if (this.isRunning) {
-      if (updateImmediately) {
-        this.drawRemainingText(nowMs);
-      }
       if (!this.intervalId) {
         this.intervalId = setInterval(() => this.drawRemainingText(), 1000);
       }
     }
   }
 
-  remInterval(updateImmediately, nowMs = null) {
-    if (updateImmediately) {
-      this.drawRemainingText(nowMs);
-    }
+  remInterval() {
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
@@ -203,13 +197,19 @@ class CountdownTimer {
   }
 
   drawRemainingText(nowMs = null) {
-    const elapsedSec = this.getElapsedSec(nowMs);
-    if (elapsedSec < this.goalSec) {
-      this.canvasTimer.drawTimer(this.context, elapsedSec, this.goalSec, this.isRunning);
+    if (this.isStarted()) {
+      const elapsedSec = this.getElapsedSec(nowMs);
+      if (elapsedSec < this.goalSec) {
+        if (!this.isRenderFrozen) {
+          this.canvasTimer.drawTimer(this.context, elapsedSec, this.goalSec, this.isRunning);
+        }
+      } else {
+        this.reset();
+        $SD.api.showOk(this.context);
+        document.getElementById('audio-alarm').play();
+      }
     } else {
-      this.reset();
-      $SD.api.showOk(this.context);
-      document.getElementById('audio-alarm').play();
+      $SD.api.setImage(this.context);
     }
   }
 };
