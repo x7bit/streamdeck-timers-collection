@@ -1,5 +1,8 @@
 # DistributionTool
 DistributionTool.exe
 
+# Deploy batch script
+deploy.bat
+
 # Release binaries
 release/
