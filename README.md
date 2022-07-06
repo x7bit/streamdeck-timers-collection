@@ -1,4 +1,3 @@
-
 # Precise Timer
 
 The `Precise Timer` is a Javascript plugin for [Stream Deck](https://developer.elgato.com/documentation/stream-deck/).
@@ -25,6 +24,18 @@ The `Precise Timer` plugin is localized to *English* and *Spanish*. If you want 
 - `Hours`
 - `Minutes`
 - `Seconds`
+
+## Deploy
+
+Please read this guide and download the *Distribution Tool*:
+
+- https://developer.elgato.com/documentation/stream-deck/sdk/packaging/
+
+Put it on the root dir of this project and execute:
+
+`DistributionTool -b -i src\com.x7bit.precisetimer.sdPlugin -o release_dir`
+
+The installable file `com.x7bit.precisetimer.streamDeckPlugin` will be created.
 
 ## Thanks
 
