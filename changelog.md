@@ -1,3 +1,6 @@
+### 1.5.4
+- The alarm sound now stops when pressing the key
+
 ### 1.5.3
 - Fix alarm not sounding when timer is not visible
 

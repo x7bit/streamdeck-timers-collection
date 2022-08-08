@@ -81,7 +81,12 @@ const action = {
       if (this.timer.isRunning) {
         this.timer.pause(nowMs);
       } else {
-        this.timer.start(nowMs);
+        if (this.timer.alarmTimeoutId) {
+          this.timer.alarmStop();
+          this.timer.reset();
+        } else {
+          this.timer.start(nowMs);
+        }
       }
     } else {  // Long Press
       this.timer.reset();
@@ -111,14 +116,6 @@ const action = {
 };
 
 class CountdownTimer {
-  goalSec;
-  timerStartMs;
-  pauseStartMs;
-  isRunning;
-  isRenderFrozen;
-  intervalId;
-  canvasTimer;
-  context;
 
   constructor(hours, minutes, seconds, context) {
     this.goalSec = hours * 3600 + minutes * 60 + seconds;
@@ -129,6 +126,8 @@ class CountdownTimer {
     this.intervalId = null;
     this.canvasTimer = new CanvasTimer();
     this.context = context;
+    this.alarmAudio = document.getElementById('audio-alarm');
+    this.alarmTimeoutId = null;
   }
 
   isStarted() {
@@ -206,17 +205,28 @@ class CountdownTimer {
       } else {
         this.reset();
         $SD.api.showOk(this.context);
-        document.getElementById('audio-alarm').play();
+        this.alarmPlay();
       }
     } else {
       $SD.api.setImage(this.context);
     }
   }
+
+  alarmPlay() {
+    this.alarmAudio.play();
+    this.alarmTimeoutId = setTimeout(() => {
+      this.alarmTimeoutId = null;
+    }, 5906);
+  }
+
+  alarmStop() {
+    this.alarmAudio.pause();
+    this.alarmAudio.currentTime = 0;
+    this.alarmTimeoutId = null;
+  }
 };
 
 class CanvasTimer {
-  canvas;
-  ctx;
 
   constructor() {
     this.canvas = document.createElement('canvas');
