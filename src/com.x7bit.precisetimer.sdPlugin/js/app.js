@@ -36,35 +36,53 @@ const action = {
         this.timer.drawRemainingText();
       }
     } else {
-      const hours = this.getIntegerSetting(jsn, 'hours');
-      const minutes = this.getIntegerSetting(jsn, 'minutes');
-      const seconds = this.getIntegerSetting(jsn, 'seconds');
+      const hours = this._getIntegerSetting(jsn, 'hours');
+      const minutes = this._getIntegerSetting(jsn, 'minutes');
+      const seconds = this._getIntegerSetting(jsn, 'seconds');
+      const timerStartMs = this._getIntegerSetting(jsn, 'timerStartMs', null);
+      const pauseStartMs = this._getIntegerSetting(jsn, 'pauseStartMs', null);
+      const isRunning = this._getBooleanSetting(jsn, 'isRunning');
+
       this.timer = new CountdownTimer(hours, minutes, seconds, jsn.context);
+      if (timerStartMs !== null) {
+        this.timer.timerStartMs = timerStartMs;
+        this.timer.pauseStartMs = pauseStartMs;
+        this.timer.isRunning = isRunning;
+        this.timer.drawRemainingText();
+        if (isRunning) {
+          this.timer.addInterval();
+        }
+      }
     }
   },
 
   onWillDisappear(jsn) {
     if (this.timer) {
       this.timer.isRenderFrozen = true;
+      this.timer.saveState();
     }
   },
 
   onDidReceiveSettings(jsn) {
-    const hours = this.getIntegerSetting(jsn, 'hours');
-    const minutes = this.getIntegerSetting(jsn, 'minutes');
-    const seconds = this.getIntegerSetting(jsn, 'seconds');
+    const hours = this._getIntegerSetting(jsn, 'hours');
+    const minutes = this._getIntegerSetting(jsn, 'minutes');
+    const seconds = this._getIntegerSetting(jsn, 'seconds');
 
     const goalSec = hours * 3600 + minutes * 60 + seconds;
     if (this.timer.goalSec !== goalSec) {
+      this.timer.hours = hours;
+      this.timer.minutes = minutes;
+      this.timer.seconds = seconds;
       this.timer.goalSec = goalSec;
       this.timer.drawRemainingText();
     }
   },
 
   onKeyDown(jsn) {
+    console.log('keyDown', jsn);  //DEBUG
     this.keyDownMs = Date.now();
     this.resetTimeoutId = setTimeout(() => {
-      this.drawClearImage(jsn);
+      this._drawClearImage(jsn);
       $SD.api.showAlert(jsn.context);
     }, 2000);
     this.timer.isRenderFrozen = true;
@@ -93,7 +111,7 @@ const action = {
     }
   },
 
-  getIntegerSetting(jsn, name, defValue = 0) {
+  _getIntegerSetting(jsn, name, defValue = 0) {
     const settings = jsn.payload.settings ?? {};
     if (settings.hasOwnProperty(name)) {
       const value = parseInt(settings[name]);
@@ -103,7 +121,12 @@ const action = {
     }
   },
 
-  drawClearImage(jsn) {
+  _getBooleanSetting(jsn, name, defValue = false) {
+    const settings = jsn.payload.settings ?? {};
+    return settings.hasOwnProperty(name) ? !!settings[name] : defValue;
+  },
+
+  _drawClearImage(jsn) {
     this.canvas = document.createElement('canvas');
     this.canvas.width = 144;
     this.canvas.height = 144;
@@ -118,6 +141,10 @@ const action = {
 class CountdownTimer {
 
   constructor(hours, minutes, seconds, context) {
+    this.hours = hours;
+    this.minutes = minutes;
+    this.seconds = seconds;
+    this.context = context;
     this.goalSec = hours * 3600 + minutes * 60 + seconds;
     this.timerStartMs = null;
     this.pauseStartMs = null;
@@ -125,7 +152,6 @@ class CountdownTimer {
     this.isRenderFrozen = false;
     this.intervalId = null;
     this.canvasTimer = new CanvasTimer();
-    this.context = context;
     this.alarmAudio = document.getElementById('audio-alarm');
     this.alarmTimeoutId = null;
   }
@@ -156,6 +182,7 @@ class CountdownTimer {
         this.isRunning = true;
         this.drawRemainingText(nowMs);
         this.addInterval();
+        this.saveState();
       } else {
         $SD.api.showAlert(this.context);
       }
@@ -168,6 +195,7 @@ class CountdownTimer {
       this.isRunning = false;
       this.drawRemainingText(nowMs);
       this.remInterval();
+      this.saveState();
     }
   }
 
@@ -178,6 +206,7 @@ class CountdownTimer {
     this.isRenderFrozen = false;
     this.remInterval();
     $SD.api.setImage(this.context);
+    this.saveState();
   }
 
   addInterval() {
@@ -223,6 +252,18 @@ class CountdownTimer {
     this.alarmAudio.pause();
     this.alarmAudio.currentTime = 0;
     this.alarmTimeoutId = null;
+  }
+
+  saveState() {
+    const payload = {
+      hours: this.hours.toString(),
+      minutes: this.minutes.toString(),
+      seconds: this.seconds.toString(),
+      timerStartMs: this.timerStartMs,
+      pauseStartMs: this.pauseStartMs,
+      isRunning: this.isRunning,
+    };
+    $SD.api.setSettings(this.context, payload);
   }
 };
 
