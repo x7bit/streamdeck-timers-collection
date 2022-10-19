@@ -22,52 +22,84 @@ function connected(jsn) {
 };
 
 const action = {
-  timer: null,
-  keyDownMs: null,
-  resetTimeoutId : null,
+  instances: {},
 
   onWillAppear(jsn) {
-    if (this.timer) {
-      if (this.timer.context !== jsn.context) {
-        this.timer.reset();
-        this.timer.context = jsn.context;
-      } else {
-        this.timer.isRenderFrozen = false;
-        this.timer.drawRemainingText();
-      }
+    if (this.instances.hasOwnProperty(jsn.context)) {
+      this.instances[jsn.context].onWillAppear();
     } else {
-      const hours = this._getIntegerSetting(jsn, 'hours');
-      const minutes = this._getIntegerSetting(jsn, 'minutes');
-      const seconds = this._getIntegerSetting(jsn, 'seconds');
-      const timerStartMs = this._getIntegerSetting(jsn, 'timerStartMs', null);
-      const pauseStartMs = this._getIntegerSetting(jsn, 'pauseStartMs', null);
-      const isRunning = this._getBooleanSetting(jsn, 'isRunning');
-
-      this.timer = new CountdownTimer(hours, minutes, seconds, jsn.context);
-      if (timerStartMs !== null) {
-        this.timer.timerStartMs = timerStartMs;
-        this.timer.pauseStartMs = pauseStartMs;
-        this.timer.isRunning = isRunning;
-        this.timer.drawRemainingText();
-        if (isRunning) {
-          this.timer.addInterval();
-        }
-      }
+      this.instances[jsn.context] = new Instance(jsn);
     }
   },
 
   onWillDisappear(jsn) {
-    if (this.timer) {
-      this.timer.isRenderFrozen = true;
-      this.timer.saveState();
+    if (this.instances.hasOwnProperty(jsn.context)) {
+      this.instances[jsn.context].onWillDisappear();
     }
   },
 
   onDidReceiveSettings(jsn) {
-    const hours = this._getIntegerSetting(jsn, 'hours');
-    const minutes = this._getIntegerSetting(jsn, 'minutes');
-    const seconds = this._getIntegerSetting(jsn, 'seconds');
+    if (this.instances.hasOwnProperty(jsn.context)) {
+      const settings = jsn.payload.settings ?? {};
+      this.instances[jsn.context].onDidReceiveSettings(settings);
+    }
+  },
 
+  onKeyDown(jsn) {
+    if (this.instances.hasOwnProperty(jsn.context)) {
+      this.instances[jsn.context].onKeyDown();
+    }
+  },
+
+  onKeyUp(jsn) {
+    if (this.instances.hasOwnProperty(jsn.context)) {
+      this.instances[jsn.context].onKeyUp();
+    }
+  },
+};
+
+class Instance {
+
+  constructor(jsn) {
+    this.context = jsn.context;
+    this.timer = null;
+    this.keyDownMs = null;
+    this.resetTimeoutId = null;
+
+    const settings = jsn.payload.settings ?? {};
+    const hours = this.getIntegerSetting(settings, 'hours');
+    const minutes = this.getIntegerSetting(settings, 'minutes');
+    const seconds = this.getIntegerSetting(settings, 'seconds');
+    const timerStartMs = this.getIntegerSetting(settings, 'timerStartMs', null);
+    const pauseStartMs = this.getIntegerSetting(settings, 'pauseStartMs', null);
+    const isRunning = this.getBooleanSetting(settings, 'isRunning');
+
+    this.timer = new CountdownTimer(hours, minutes, seconds, jsn.context);
+    if (timerStartMs !== null) {
+      this.timer.timerStartMs = timerStartMs;
+      this.timer.pauseStartMs = pauseStartMs;
+      this.timer.isRunning = isRunning;
+      this.timer.drawRemainingText();
+      if (isRunning) {
+        this.timer.addInterval();
+      }
+    }
+  }
+
+  onWillAppear() {
+    this.timer.isRenderFrozen = false;
+    this.timer.drawRemainingText();
+  }
+
+  onWillDisappear() {
+    this.timer.isRenderFrozen = true;
+    this.timer.saveState();
+  }
+
+  onDidReceiveSettings(settings) {
+    const hours = this.getIntegerSetting(settings, 'hours');
+    const minutes = this.getIntegerSetting(settings, 'minutes');
+    const seconds = this.getIntegerSetting(settings, 'seconds');
     const goalSec = hours * 3600 + minutes * 60 + seconds;
     if (this.timer.goalSec !== goalSec) {
       this.timer.hours = hours;
@@ -76,19 +108,18 @@ const action = {
       this.timer.goalSec = goalSec;
       this.timer.drawRemainingText();
     }
-  },
+  }
 
-  onKeyDown(jsn) {
-    console.log('keyDown', jsn);  //DEBUG
+  onKeyDown() {
     this.keyDownMs = Date.now();
     this.resetTimeoutId = setTimeout(() => {
-      this._drawClearImage(jsn);
-      $SD.api.showAlert(jsn.context);
+      this.drawClearImage();
+      $SD.api.showAlert(this.context);
     }, 2000);
     this.timer.isRenderFrozen = true;
-  },
+  }
 
-  onKeyUp(jsn) {
+  onKeyUp() {
     clearTimeout(this.resetTimeoutId);
     this.resetTimeoutId = null;
     this.timer.isRenderFrozen = false;
@@ -109,34 +140,32 @@ const action = {
     } else {  // Long Press
       this.timer.reset();
     }
-  },
+  }
 
-  _getIntegerSetting(jsn, name, defValue = 0) {
-    const settings = jsn.payload.settings ?? {};
+  getIntegerSetting(settings, name, defValue = 0) {
     if (settings.hasOwnProperty(name)) {
       const value = parseInt(settings[name]);
       return isNaN(value) ? defValue : value;
     } else {
       return defValue;
     }
-  },
+  }
 
-  _getBooleanSetting(jsn, name, defValue = false) {
-    const settings = jsn.payload.settings ?? {};
+  getBooleanSetting(settings, name, defValue = false) {
     return settings.hasOwnProperty(name) ? !!settings[name] : defValue;
-  },
+  }
 
-  _drawClearImage(jsn) {
-    this.canvas = document.createElement('canvas');
-    this.canvas.width = 144;
-    this.canvas.height = 144;
-    this.ctx = this.canvas.getContext('2d');
+  drawClearImage() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 144;
+    canvas.height = 144;
 
+    const ctx = canvas.getContext('2d');
     const img = document.getElementById('clear-bg');
-    this.ctx.drawImage(img, 0, 0, 144, 144);
-    $SD.api.setImage(jsn.context, this.canvas.toDataURL('image/png'));
-  },
-};
+    ctx.drawImage(img, 0, 0, 144, 144);
+    $SD.api.setImage(this.context, canvas.toDataURL('image/png'));
+  }
+}
 
 class CountdownTimer {
 

@@ -1,3 +1,7 @@
+### 1.6.0
+- Immune to restarts, both of the computer and the Stream Deck application
+- Allows multiple instances
+
 ### 1.5.4
 - The alarm sound now stops when pressing the key
 

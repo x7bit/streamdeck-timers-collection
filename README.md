@@ -13,6 +13,8 @@ Precise and pauseable timer, especially suitable for long periods. Since the def
 - Pauseable: press the key to pause/resume it
 - Resettable: press the key for more than 2 seconds to reset it
 - Configurable: you can configure hours, minutes and seconds in the *Property Inspector*
+- Persistent: immune to restarts, both of the computer and the Stream Deck application
+- Multiple: allows multiple instances
 - Cross-platform: macOS, Windows
 
 ## Localization
