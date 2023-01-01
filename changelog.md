@@ -1,3 +1,6 @@
+### 1.6.1
+- New icon (Stream Deck 6.0 style)
+
 ### 1.6.0
 - Immune to restarts, both of the computer and the Stream Deck application
 - Allows multiple instances
