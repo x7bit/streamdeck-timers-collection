@@ -1,5 +1,5 @@
 ### 1.6.1
-- New icon (Stream Deck 6.0 style)
+- New icons and assets
 - Minor code improvements
 
 ### 1.6.0

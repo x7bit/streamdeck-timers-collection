@@ -22,38 +22,38 @@ function connected(jsn) {
 };
 
 const action = {
-  instances: new Map(),
+  instances: {},
 
   onWillAppear(jsn) {
-    if (this.instances.has(jsn.context)) {
-      this.instances.get(jsn.context).onWillAppear();
+    if (this.instances.hasOwnProperty(jsn.context)) {
+      this.instances[jsn.context].onWillAppear();
     } else {
-      this.instances.set(jsn.context, new Instance(jsn));
+      this.instances[jsn.context] = new Instance(jsn);
     }
   },
 
   onWillDisappear(jsn) {
-    if (this.instances.has(jsn.context)) {
-      this.instances.get(jsn.context).onWillDisappear();
+    if (this.instances.hasOwnProperty(jsn.context)) {
+      this.instances[jsn.context].onWillDisappear();
     }
   },
 
   onDidReceiveSettings(jsn) {
-    if (this.instances.has(jsn.context)) {
+    if (this.instances.hasOwnProperty(jsn.context)) {
       const settings = jsn.payload.settings ?? {};
-      this.instances.get(jsn.context).onDidReceiveSettings(settings);
+      this.instances[jsn.context].onDidReceiveSettings(settings);
     }
   },
 
   onKeyDown(jsn) {
-    if (this.instances.has(jsn.context)) {
-      this.instances.get(jsn.context).onKeyDown();
+    if (this.instances.hasOwnProperty(jsn.context)) {
+      this.instances[jsn.context].onKeyDown();
     }
   },
 
   onKeyUp(jsn) {
     if (this.instances.hasOwnProperty(jsn.context)) {
-      this.instances.get(jsn.context).onKeyUp();
+      this.instances[jsn.context].onKeyUp();
     }
   },
 };
