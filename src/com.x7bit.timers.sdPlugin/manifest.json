@@ -1,0 +1,40 @@
+{
+	"SDKVersion": 2,
+	"Author": "x7bit",
+	"CodePath": "app.html",
+	"Description": "Precise and pauseable countdown timer, especially suitable for long periods",
+	"Name": "Timers Collection",
+	"Icon": "actions/countdown/images/action",
+	"URL": "https://github.com/x7bit/streamdeck-precise-timer",
+	"Version": "1.7.0",
+	"Software": {
+		"MinimumVersion": "5.0"
+	},
+	"OS": [
+		{
+			"Platform": "mac",
+			"MinimumVersion": "10.11"
+		},
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Category": "Timers Collection",
+	"CategoryIcon": "actions/countdown/images/actionimage",
+	"Actions": [
+		{
+			"Icon": "actions/countdown/images/actionimage",
+			"Name": "Countdown Timer",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "actions/countdown/images/action"
+				}
+			],
+			"Tooltip": "Precise and pauseable countdown timer, especially suitable for long periods",
+      "UUID": "com.x7bit.timers.countdown",
+			"PropertyInspectorPath": "actions/countdown/property-inspector/inspector.html"
+		}
+	]
+}

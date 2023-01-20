@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui,viewport-fit=cover"
+		/>
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<title>com.x7bit.timers.countdown Property Inspector</title>
+		<link rel="stylesheet" href="../../../libs/css/sdpi.css" />
+	</head>
+	<body>
+		<div class="sdpi-wrapper">
+			<form id="property-inspector">
+
+				<div class="sdpi-item">
+					<div data-localize class="sdpi-item-label">Hours</div>
+					<input class="sdpi-item-value" name="hours" type="number" min="0" max="18"  placeholder="1" />
+				</div>
+
+				<div class="sdpi-item">
+					<div data-localize class="sdpi-item-label">Minutes</div>
+					<input class="sdpi-item-value" name="minutes" type="number" min="0" max="59" placeholder="0" />
+				</div>
+
+				<div class="sdpi-item">
+					<div data-localize class="sdpi-item-label">Seconds</div>
+					<input class="sdpi-item-value" name="seconds" type="number" min="0" max="59" placeholder="0" />
+				</div>
+
+				<div class="sdpi-item">
+					<div class="sdpi-item-label">Links</div>
+					<button class="sdpi-item-value" id="readme-button">Readme</button>
+					<button class="sdpi-item-value" id="changelog-button">Changelog</button>
+				</div>
+			</form>
+		</div>
+
+		<div class="sdpi-info-label hidden" style="top: -1000" value=""></div>
+
+		<!-- Stream Deck Libs -->
+		<script src="../../../libs/js/constants.js"></script>
+		<script src="../../../libs/js/prototypes.js"></script>
+		<script src="../../../libs/js/timers.js"></script>
+		<script src="../../../libs/js/utils.js"></script>
+		<script src="../../../libs/js/events.js"></script>
+		<script src="../../../libs/js/api.js"></script>
+		<script src="../../../libs/js/property-inspector.js"></script>
+		<script src="../../../libs/js/dynamic-styles.js"></script>
+
+		<!-- Property Inspector Source -->
+		<script src="inspector.js"></script>
+	</body>
+</html>

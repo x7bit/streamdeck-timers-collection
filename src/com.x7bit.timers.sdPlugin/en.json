@@ -1,0 +1,14 @@
+{
+  "Description": "Precise and pauseable countdown timer, especially suitable for long periods",
+  "Name": "Timers Collection",
+  "Category": "Timers Collection",
+  "com.x7bit.timers.countdown": {
+    "Name": "Countdown Timer",
+    "Tooltip": "Precise and pauseable countdown timer, especially suitable for long periods"
+  },
+  "Localization": {
+    "Hours": "Hours",
+    "Minutes": "Minutes",
+    "Seconds": "Seconds"
+  }
+}

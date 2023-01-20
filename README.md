@@ -35,9 +35,9 @@ Please read this guide and download the *Distribution Tool*:
 
 Put it on the root dir of this project and execute:
 
-`DistributionTool -b -i src\com.x7bit.precisetimer.sdPlugin -o release_dir`
+`DistributionTool -b -i src\com.x7bit.timers.sdPlugin -o release_dir`
 
-The installable file `com.x7bit.precisetimer.streamDeckPlugin` will be created.
+The installable file `com.x7bit.timers.streamDeckPlugin` will be created.
 
 ## Thanks
 
