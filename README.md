@@ -1,31 +1,32 @@
 # Precise Timer
 
-The `Precise Timer` is a Javascript plugin for [Stream Deck](https://developer.elgato.com/documentation/stream-deck/).
+The `Timers Collection` is a Javascript plugin for [Stream Deck](https://developer.elgato.com/documentation/stream-deck/).
 
-`Precise Timer` requires Stream Deck 4.1 or later.
+`Timers Collection` requires Stream Deck 5.0 or later.
 
 ## Description
 
-Precise and pauseable timer, especially suitable for long periods. Since the default timer (from the *Stream Deck* category) is quite inaccurate for periods of many hours, the `Precise Timer` plugin was developed with the idea of using it for long periods, such as workdays. To do this, the plugin saves the system time when the timer starts, and calculates the difference. This ensures that the measurement is accurate even when the timer is set to many hours.
+Precise and pauseable timers collection, especially suitable for long periods. Since the default timer (from the *Stream Deck* category) is quite inaccurate for periods of many hours, the `Timers Collection` plugin was developed with the idea of using it for long periods, such as workdays. To do this, the plugin saves the system time when the timer starts, and calculates the difference. This ensures that the measurement is accurate even when the timer is set to many hours.
+
+## Timers List
+
+- Chronometer
+- Countdown Timer
+- Interval Timer
+- Pomodoro Timer (incoming on next release)
 
 ## Features:
 
 - Pauseable: press the key to pause/resume it
 - Resettable: press the key for more than 2 seconds to reset it
-- Configurable: you can configure hours, minutes and seconds in the *Property Inspector*
+- Configurable: every timer (except chronometer) can be set on the *Property Inspector*
 - Persistent: immune to restarts, both of the computer and the Stream Deck application
 - Multiple: allows multiple instances
 - Cross-platform: macOS, Windows
 
 ## Localization
 
-The `Precise Timer` plugin is localized to *English* and *Spanish*. If you want to help localize it to other languages, these are the strings to translate:
-
-- `Precise Timer`
-- `Precise and pauseable timer, especially suitable for long periods`
-- `Hours`
-- `Minutes`
-- `Seconds`
+The `Timers Collection` plugin is localized to *English* and *Spanish*. If you want to help localize it to other languages, please take the [en.json](https://github.com/x7bit/streamdeck-timers-collection/blob/main/src/com.x7bit.timers.sdPlugin/en.json) as template.
 
 ## Deploy
 
@@ -42,6 +43,6 @@ The installable file `com.x7bit.timers.streamDeckPlugin` will be created.
 ## Thanks
 
 - **[QuakeBert](https://www.reddit.com/user/QuakeBert/)**: for the suggestion of using the `timers.js` from [this repo](https://github.com/elgatosf/streamdeck-timerfix/blob/master/com.streamdeck.timerfix.sdPlugin/js/timers.js)
-- **[elgatosf](https://github.com/elgatosf)**: for provide the plugin template and timerfix repos:
-    - https://github.com/elgatosf/streamdeck-plugintemplate
-    - https://github.com/elgatosf/streamdeck-timerfix
+- **[elgatosf](https://github.com/elgatosf)**: for provide the plugin template and SDK repos:
+    - https://github.com/elgatosf/streamdeck-plugin-template
+    - https://github.com/elgatosf/streamdeck-javascript-sdk
