@@ -2,6 +2,7 @@
 /// <reference path="libs/js/stream-deck.js" />
 /// <reference path="js/chrono.js" />
 /// <reference path="js/countdown.js" />
+/// <reference path="js/interval.js" />
 
 class Instance {
 
@@ -17,6 +18,9 @@ class Instance {
 				break;
 			case 'com.x7bit.timers.countdown':
 				this.timer = new CountdownTimer(context, settings);
+				break;
+			case 'com.x7bit.timers.interval':
+				this.timer = new IntervalTimer(context, settings);
 				break;
 			default:
 				this.timer = null;
@@ -67,6 +71,7 @@ const actions = new Map();
 const uuids = [
 	'com.x7bit.timers.chrono',
 	'com.x7bit.timers.countdown',
+	'com.x7bit.timers.interval',
 ];
 
 for (const uuid of uuids) {

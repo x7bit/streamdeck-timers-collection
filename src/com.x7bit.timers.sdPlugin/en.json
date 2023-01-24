@@ -10,6 +10,10 @@
     "Name": "Countdown Timer",
     "Tooltip": "Precise and pauseable countdown timer, especially suitable for long periods"
   },
+  "com.x7bit.timers.interval": {
+    "Name": "Interval Timer",
+    "Tooltip": "Precise and pauseable interval timer"
+  },
   "Localization": {
     "Hours": "Hours",
     "Minutes": "Minutes",

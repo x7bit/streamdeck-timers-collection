@@ -202,7 +202,7 @@ class CanvasCountdownTimer {
 		this.ctx.font = `${fSize}px arial`;
 		this.ctx.textBaseline = 'middle';
 		this.ctx.textAlign = 'center';
-		this.ctx.fillText(remainingText, 72, (144 + fSizeThird) / 2);
+		this.ctx.fillText(remainingText, 72, (140 + fSizeThird) / 2);
 		//Foreground Circles
 		if (isRunning) {
 			for (let i = 0; i < 3 && i <= elapsedSec; i++) {
