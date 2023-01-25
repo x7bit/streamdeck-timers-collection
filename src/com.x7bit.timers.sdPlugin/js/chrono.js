@@ -144,9 +144,16 @@ class CanvasChronoTimer {
 	}
 
 	drawTimer(elapsedSec, isRunning) {
-		//Background
-		const img = document.getElementById(isRunning ? 'timer-bg-running' : 'timer-bg-pause');
-		this.ctx.drawImage(img, 0, 0, 144, 144);
+		const img = new Image();
+		img.onload = () => {
+			this.ctx.drawImage(img, 0, 0, 144, 144);
+			this.drawTimerInner(elapsedSec, isRunning);
+			$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
+		}
+		img.src = 'assets/images/' + (isRunning ? 'timer-bg-running' : 'timer-bg-pause') + '.png';
+	}
+
+	drawTimerInner(elapsedSec, isRunning) {
 		//Foreground Text
 		const remainingText = this.getElapsedText(elapsedSec);
 		const fSize = this.getFontSize(remainingText.length);
@@ -169,8 +176,6 @@ class CanvasChronoTimer {
 				}
 			}
 		}
-		//Draw Canvas
-		$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
 	}
 
 	drawClearImage() {

@@ -178,9 +178,16 @@ class CanvasCountdownTimer {
 	}
 
 	drawTimer(elapsedSec, goalSec, isRunning) {
-		//Background
-		const img = document.getElementById(isRunning ? 'timer-bg-running' : 'timer-bg-pause');
-		this.ctx.drawImage(img, 0, 0, 144, 144);
+		const img = new Image();
+		img.onload = () => {
+			this.ctx.drawImage(img, 0, 0, 144, 144);
+			this.drawTimerInner(elapsedSec, goalSec, isRunning);
+			$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
+		}
+		img.src = 'assets/images/' + (isRunning ? 'timer-bg-running' : 'timer-bg-pause') + '.png';
+	}
+
+	drawTimerInner(elapsedSec, goalSec, isRunning) {
 		//Foreground Text
 		const remainingText = this.getRemainingText(elapsedSec, goalSec);
 		const fSize = this.getFontSize(remainingText.length);
@@ -203,8 +210,6 @@ class CanvasCountdownTimer {
 				}
 			}
 		}
-		//Draw Canvas
-		$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
 	}
 
 	drawClearImage() {

@@ -19,7 +19,7 @@ class AudioHandler {
 
     if (isInit || this.id !== id) {
       this.id = id;
-      this.audio = id === 'none' ? null : document.getElementById(id);
+      this.audio = id === 'none' ? null : new Audio(`${path}/${id}.mp3`);
     }
 
     if (isInit || this.volume !== volume) {
