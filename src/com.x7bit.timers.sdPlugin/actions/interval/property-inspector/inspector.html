@@ -15,25 +15,75 @@
 		<div class="sdpi-wrapper">
 			<form id="property-inspector">
 
-				<div class="sdpi-item">
-					<div class="sdpi-item-label" data-localize>Hours</div>
-					<input class="sdpi-item-value" name="hours" type="number" min="0" max="18"  placeholder="1" />
+				<div type="group" class="sdpi-item">
+					<div class="sdpi-item-label" data-localize>Time</div>
+    			<div class="sdpi-item-group">
+
+						<div class="sdpi-item">
+							<div class="sdpi-item-label" data-localize>Hours</div>
+							<input class="sdpi-item-value" name="hours" type="number" min="0" max="18"  placeholder="1" />
+						</div>
+
+						<div class="sdpi-item">
+							<div class="sdpi-item-label" data-localize>Minutes</div>
+							<input class="sdpi-item-value" name="minutes" type="number" min="0" max="59" placeholder="0" />
+						</div>
+
+						<div class="sdpi-item">
+							<div class="sdpi-item-label" data-localize>Seconds</div>
+							<input class="sdpi-item-value" name="seconds" type="number" min="0" max="59" placeholder="0" />
+						</div>
+
+					</div>
 				</div>
 
-				<div class="sdpi-item">
-					<div class="sdpi-item-label" data-localize>Minutes</div>
-					<input class="sdpi-item-value" name="minutes" type="number" min="0" max="59" placeholder="0" />
+				<div type="group" class="sdpi-item">
+					<div class="sdpi-item-label" data-localize>Audio</div>
+    			<div class="sdpi-item-group">
+
+						<div class="sdpi-item" type="select">
+							<div class="sdpi-item-label">Sound</div>
+							<select class="sdpi-item-value select" name="audio-id">
+								<option value="gong">Gong</option>
+								<option value="alarm-clock">Alarm Clock</option>
+								<option value="emergency">Emergency</option>
+								<option value="japan-eas">Japan EAS</option>
+								<option value="none">None</option>
+							</select>
+						</div>
+
+						<div class="sdpi-item" type="range">
+							<div class="sdpi-item-label" data-localize>Volume</div>
+							<div class="sdpi-item-value">
+									<span class="clickable" value="0">0</span>
+									<input type="range" name="audio-volume" min="0" max="100" value=100>
+									<span class="clickable" value="100">100</span>
+							</div>
+						</div>
+
+						<div class="sdpi-item" type="range">
+							<div class="sdpi-item-label" data-localize>Loops</div>
+							<div class="sdpi-item-value">
+									<span class="clickable" value="1">1</span>
+									<input type="range" name="audio-loops" min="1" max="4" value=1>
+									<span class="clickable" value="4">4</span>
+							</div>
+						</div>
+
+					</div>
 				</div>
 
-				<div class="sdpi-item">
-					<div class="sdpi-item-label" data-localize>Seconds</div>
-					<input class="sdpi-item-value" name="seconds" type="number" min="0" max="59" placeholder="0" />
-				</div>
+				<div type="group" class="sdpi-item">
+					<div class="sdpi-item-label" data-localize>More Info</div>
+    			<div class="sdpi-item-group">
 
-				<div class="sdpi-item">
-					<div class="sdpi-item-label">Links</div>
-					<button class="sdpi-item-value" id="readme-button">Readme</button>
-					<button class="sdpi-item-value" id="changelog-button">Changelog</button>
+						<div class="sdpi-item">
+							<div class="sdpi-item-label">Links</div>
+							<button class="sdpi-item-value" id="readme-button">Readme</button>
+							<button class="sdpi-item-value" id="changelog-button">Changelog</button>
+						</div>
+
+					</div>
 				</div>
 
 			</form>

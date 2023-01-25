@@ -5,15 +5,11 @@ class CountdownTimer {
 
 	constructor(context, settings) {
 		this.context = context;
-		this.hours = getIntegerSetting(settings, 'hours', 1);
-		this.minutes = getIntegerSetting(settings, 'minutes');
-		this.seconds = getIntegerSetting(settings, 'seconds');
-		this.goalSec = this.hours * 3600 + this.minutes * 60 + this.seconds;
 		this.isRenderFrozen = false;
 		this.intervalId = null;
 		this.canvasTimer = new CanvasCountdownTimer(context);
-		this.alarmAudio = document.getElementById('audio-alarm');
-		this.alarmTimeoutId = null;
+
+		this.loadState(settings, true);
 
 		const timerStartMs = getIntegerSetting(settings, 'timerStartMs', null);
 		const pauseStartMs = getIntegerSetting(settings, 'pauseStartMs', null);
@@ -34,17 +30,21 @@ class CountdownTimer {
 		}
 	}
 
-	loadState(settings) {
-		const hours = getIntegerSetting(settings, 'hours');
-		const minutes = getIntegerSetting(settings, 'minutes');
-		const seconds = getIntegerSetting(settings, 'seconds');
-		const goalSec = hours * 3600 + minutes * 60 + seconds;
-		if (this.goalSec !== goalSec) {
-			this.hours = hours;
-			this.minutes = minutes;
-			this.seconds = seconds;
+	loadState(settings, isInit) {
+		this.hours = getIntegerSetting(settings, 'hours', 1);
+		this.minutes = getIntegerSetting(settings, 'minutes');
+		this.seconds = getIntegerSetting(settings, 'seconds');
+
+		const goalSec = this.hours * 3600 + this.minutes * 60 + this.seconds;
+		if (isInit) {
 			this.goalSec = goalSec;
-			this.drawTimer();
+			this.alarmAudio = new AudioHandler(settings);
+		} else {
+			if (this.goalSec !== goalSec) {
+				this.goalSec = goalSec;
+				this.drawTimer();
+			}
+			this.alarmAudio.loadState(settings, false);
 		}
 	}
 
@@ -64,8 +64,8 @@ class CountdownTimer {
 		if (this.isRunning) {
 			this.pause(nowMs);
 		} else {
-			if (this.alarmTimeoutId) {
-				this.alarmStop();
+			if (this.alarmAudio.isPlaying()) {
+				this.alarmAudio.stop();
 				this.reset();
 			} else {
 				this.start(nowMs);
@@ -155,7 +155,7 @@ class CountdownTimer {
 			} else {
 				this.reset();
 				$SD.showOk(this.context);
-				this.alarmPlay();
+				this.alarmAudio.play();
 			}
 		} else {
 			$SD.setImage(this.context);
@@ -164,19 +164,6 @@ class CountdownTimer {
 
 	drawClearImage() {
 		this.canvasTimer.drawClearImage();
-	}
-
-	alarmPlay() {
-		this.alarmAudio.play();
-		this.alarmTimeoutId = setTimeout(() => {
-			this.alarmTimeoutId = null;
-		}, 5906);
-	}
-
-	alarmStop() {
-		this.alarmAudio.pause();
-		this.alarmAudio.currentTime = 0;
-		this.alarmTimeoutId = null;
 	}
 };
 

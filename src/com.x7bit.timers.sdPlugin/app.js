@@ -39,7 +39,7 @@ class Instance {
 	}
 
 	onDidReceiveSettings(payload) {
-		this.timer.loadState(payload.settings ?? {});
+		this.timer.loadState(payload.settings ?? {}, false);
 	}
 
 	onKeyDown() {

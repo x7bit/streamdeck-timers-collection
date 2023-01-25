@@ -1,3 +1,7 @@
+const getStringSetting = (settings, name, defValue = '') => {
+	return settings.hasOwnProperty(name) ? String(settings[name]) : defValue;
+};
+
 const getIntegerSetting = (settings, name, defValue = 0) => {
 	if (settings.hasOwnProperty(name)) {
 		const value = parseInt(settings[name]);

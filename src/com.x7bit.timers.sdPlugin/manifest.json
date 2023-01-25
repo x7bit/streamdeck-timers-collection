@@ -6,7 +6,7 @@
 	"Name": "Timers Collection",
 	"Icon": "actions/countdown/images/action",
 	"URL": "https://github.com/x7bit/streamdeck-precise-timer",
-	"Version": "1.9.9.1",
+	"Version": "1.9.9.3",
 	"Software": {
 		"MinimumVersion": "5.0"
 	},

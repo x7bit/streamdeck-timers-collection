@@ -28,7 +28,7 @@ class ChronoTimer {
 		}
 	}
 
-	loadState(settings) {
+	loadState(settings, isInit) {
 		//
 	}
 

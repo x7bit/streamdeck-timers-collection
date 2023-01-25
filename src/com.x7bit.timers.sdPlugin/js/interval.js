@@ -1,4 +1,5 @@
 /// <reference path="../libs/js/stream-deck.js" />
+/// <reference path="audio.js" />
 /// <reference path="helper.js" />
 
 class IntervalTimer {
@@ -6,15 +7,11 @@ class IntervalTimer {
 	constructor(context, settings) {
 		this.context = context;
 		this.round = getIntegerSetting(settings, 'round', 1);
-		this.hours = getIntegerSetting(settings, 'hours', 1);
-		this.minutes = getIntegerSetting(settings, 'minutes');
-		this.seconds = getIntegerSetting(settings, 'seconds');
-		this.goalSec = this.hours * 3600 + this.minutes * 60 + this.seconds;
 		this.isRenderFrozen = false;
 		this.intervalId = null;
 		this.canvasTimer = new CanvasIntervalTimer(context);
-		this.alarmAudio = document.getElementById('audio-alarm');
-		this.alarmTimeoutId = null;
+
+		this.loadState(settings, true);
 
 		const timerStartMs = getIntegerSetting(settings, 'timerStartMs', null);
 		const pauseStartMs = getIntegerSetting(settings, 'pauseStartMs', null);
@@ -35,17 +32,21 @@ class IntervalTimer {
 		}
 	}
 
-	loadState(settings) {
-		const hours = getIntegerSetting(settings, 'hours');
-		const minutes = getIntegerSetting(settings, 'minutes');
-		const seconds = getIntegerSetting(settings, 'seconds');
-		const goalSec = hours * 3600 + minutes * 60 + seconds;
-		if (this.goalSec !== goalSec) {
-			this.hours = hours;
-			this.minutes = minutes;
-			this.seconds = seconds;
+	loadState(settings, isInit) {
+		this.hours = getIntegerSetting(settings, 'hours', 1);
+		this.minutes = getIntegerSetting(settings, 'minutes');
+		this.seconds = getIntegerSetting(settings, 'seconds');
+
+		const goalSec = this.hours * 3600 + this.minutes * 60 + this.seconds;
+		if (isInit) {
 			this.goalSec = goalSec;
-			this.drawTimer();
+			this.alarmAudio = new AudioHandler(settings);
+		} else {
+			if (this.goalSec !== goalSec) {
+				this.goalSec = goalSec;
+				this.drawTimer();
+			}
+			this.alarmAudio.loadState(settings, false);
 		}
 	}
 
@@ -63,8 +64,8 @@ class IntervalTimer {
 	}
 
 	shortPress(nowMs) {
-		if (this.alarmTimeoutId) {
-			this.alarmStop();
+		if (this.alarmAudio.isPlaying()) {
+			this.alarmAudio.stop();
 		} else {
 			if (this.isRunning) {
 				this.pause(nowMs);
@@ -159,7 +160,7 @@ class IntervalTimer {
 				this.timerStartMs = nowMs ?? Date.now();
 				this.pauseStartMs = null;
 				this.canvasTimer.drawTimer(0, this.goalSec, this.round, this.isRunning);
-				this.alarmPlay();
+				this.alarmAudio.play();
 			}
 		} else {
 			$SD.setImage(this.context);
@@ -168,19 +169,6 @@ class IntervalTimer {
 
 	drawClearImage() {
 		this.canvasTimer.drawClearImage();
-	}
-
-	alarmPlay() {
-		this.alarmAudio.play();
-		this.alarmTimeoutId = setTimeout(() => {
-			this.alarmTimeoutId = null;
-		}, 5906);
-	}
-
-	alarmStop() {
-		this.alarmAudio.pause();
-		this.alarmAudio.currentTime = 0;
-		this.alarmTimeoutId = null;
 	}
 };
 
