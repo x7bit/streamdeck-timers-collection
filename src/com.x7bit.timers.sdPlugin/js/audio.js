@@ -2,62 +2,57 @@
 
 class AudioHandler {
 
-  constructor(settings) {
-    this.loadState(settings, true);
-  }
+	constructor(settings) {
+		this.audio = null;
+		this.loops = 1;
+		this.remLoops = 0;
+		this.loadState(settings, true);
+	}
 
-  loadState(settings, isInit) {
-    if (isInit) {
-      this.audioTimeoutId = null;
-    } else if (this.isPlaying()) {
-      this.stop();
-    }
+	loadState(settings) {
+		const id = getStringSetting(settings, 'audio-id', 'gong');
+		if (id === 'none') {
+			this.audio = null;
+			return;
+		}
+		if (!this.audio || this.audio.id !== id) {
+			if (this.isPlaying()) {
+				this.stop();
+			}
+			this.audio = document.getElementById(id);
+			this.audio.loop = true;
+		}
+		this.audio.volume = getIntegerSetting(settings, 'audio-volume', 100) / 100;
+		this.loops = getIntegerSetting(settings, 'audio-loops', 1);
+	}
 
-    const id = getStringSetting(settings, 'audio-id', 'gong');
-    const volume = getIntegerSetting(settings, 'audio-volume', 100) / 100;
-    const loops = getIntegerSetting(settings, 'audio-loops', 1);
+	isPlaying() {
+		return this.audio && (!this.audio.paused || this.remLoops > 0);
+	}
 
-    if (isInit || this.id !== id) {
-      this.id = id;
-      this.audio = id === 'none' ? null : new Audio(`${path}/${id}.mp3`);
-    }
-
-    if (isInit || this.volume !== volume) {
-      this.volume = volume;
-      if (this.audio) {
-        this.audio.volume = volume;
-      }
-    }
-
-    if (isInit || this.loops !== loops) {
-      this.loops = loops;
-      if (this.audio) {
-        this.audio.loop = loops > 1;
-      }
-    }
-  }
-
-  isPlaying() {
-    return this.audioTimeoutId !== null;
-  }
-
-  play() {
-    if (this.audio) {
-      this.audio.play();
-      this.audioTimeoutId = setTimeout(() => {
-        this.audio.pause();
-        this.audio.currentTime = 0;
-        this.audioTimeoutId = null;
-      }, this.audio.duration * this.loops * 1000);
-    }
+	play() {
+		if (this.audio) {
+			this.stop();
+			this.remLoops = this.loops;
+			this.audio.ontimeupdate = () => {
+				if (this.audio.currentTime == 0) {
+					this.remLoops--;
+				}
+				if (this.remLoops <= 0) {
+					this.stop();
+				}
+			};
+			this.audio.play();
+		}
 	}
 
 	stop() {
-    if (this.audio) {
-      this.audio.pause();
-      this.audio.currentTime = 0;
-      this.audioTimeoutId = null;
-    }
+		if (this.isPlaying()) {
+			this.audio.pause();
+			this.audio.ontimeupdate = null;
+			this.audio.currentTime = 0;
+			this.remLoops = 0;
+		}
 	}
 
 }

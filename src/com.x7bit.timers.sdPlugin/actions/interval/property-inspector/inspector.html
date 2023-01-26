@@ -8,7 +8,7 @@
 		/>
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-		<title>com.x7bit.timers.countdown Property Inspector</title>
+		<title>com.x7bit.timers.interval Property Inspector</title>
 		<link rel="stylesheet" href="../../../libs/css/sdpi.css" />
 	</head>
 	<body>
@@ -17,11 +17,11 @@
 
 				<div type="group" class="sdpi-item">
 					<div class="sdpi-item-label" data-localize>Time</div>
-    			<div class="sdpi-item-group">
+					<div class="sdpi-item-group">
 
 						<div class="sdpi-item">
 							<div class="sdpi-item-label" data-localize>Hours</div>
-							<input class="sdpi-item-value" name="hours" type="number" min="0" max="18"  placeholder="1" />
+							<input class="sdpi-item-value" name="hours" type="number" min="0" max="18" placeholder="1" />
 						</div>
 
 						<div class="sdpi-item">
@@ -38,11 +38,11 @@
 				</div>
 
 				<div type="group" class="sdpi-item">
-					<div class="sdpi-item-label" data-localize>Audio</div>
-    			<div class="sdpi-item-group">
+					<div class="sdpi-item-label">Audio</div>
+					<div class="sdpi-item-group">
 
 						<div class="sdpi-item" type="select">
-							<div class="sdpi-item-label">Sound</div>
+							<div class="sdpi-item-label" data-localize>Sound</div>
 							<select class="sdpi-item-value select" name="audio-id">
 								<option value="gong">Gong</option>
 								<option value="alarm-clock">Alarm Clock</option>
@@ -70,15 +70,21 @@
 							</div>
 						</div>
 
+						<div class="sdpi-item">
+							<div class="sdpi-item-label" data-localize>Preview</div>
+							<button class="sdpi-item-value" id="play-button">Play</button>
+							<button class="sdpi-item-value" id="stop-button">Stop</button>
+						</div>
+
 					</div>
 				</div>
 
 				<div type="group" class="sdpi-item">
 					<div class="sdpi-item-label" data-localize>More Info</div>
-    			<div class="sdpi-item-group">
+					<div class="sdpi-item-group">
 
 						<div class="sdpi-item">
-							<div class="sdpi-item-label">Links</div>
+							<div class="sdpi-item-label" data-localize>Links</div>
 							<button class="sdpi-item-value" id="readme-button">Readme</button>
 							<button class="sdpi-item-value" id="changelog-button">Changelog</button>
 						</div>
@@ -103,5 +109,13 @@
 
 		<!-- Property Inspector Source -->
 		<script src="inspector.js"></script>
+
+		<!-- For Audio Preview -->
+		<script src="../../../js/audio.js"></script>
+		<script src="../../../js/helper.js"></script>
+		<audio id="alarm-clock" src="../../../assets/audio/alarm-clock.mp3" preload="auto"></audio>
+		<audio id="emergency" src="../../../assets/audio/emergency.mp3" preload="auto"></audio>
+		<audio id="gong" src="../../../assets/audio/gong.mp3" preload="auto"></audio>
+		<audio id="japan-eas" src="../../../assets/audio/japan-eas.mp3" preload="auto"></audio>
 	</body>
 </html>

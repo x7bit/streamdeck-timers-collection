@@ -178,13 +178,12 @@ class CanvasCountdownTimer {
 	}
 
 	drawTimer(elapsedSec, goalSec, isRunning) {
-		const img = new Image();
-		img.onload = () => {
-			this.ctx.drawImage(img, 0, 0, 144, 144);
-			this.drawTimerInner(elapsedSec, goalSec, isRunning);
-			$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
-		}
-		img.src = 'assets/images/' + (isRunning ? 'timer-bg-running' : 'timer-bg-pause') + '.png';
+		const img = document.getElementById(isRunning ? 'timer-bg-running' : 'timer-bg-pause');
+		this.ctx.fillStyle = '#000';
+		this.ctx.fillRect(0, 0, 144, 144);
+		this.ctx.drawImage(img, 0, 0, 144, 144);
+		this.drawTimerInner(elapsedSec, goalSec, isRunning);
+		$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
 	}
 
 	drawTimerInner(elapsedSec, goalSec, isRunning) {

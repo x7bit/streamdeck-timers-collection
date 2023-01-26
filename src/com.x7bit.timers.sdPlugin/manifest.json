@@ -6,7 +6,7 @@
 	"Name": "Timers Collection",
 	"Icon": "actions/countdown/images/action",
 	"URL": "https://github.com/x7bit/streamdeck-precise-timer",
-	"Version": "1.9.9.3",
+	"Version": "1.9.9.4",
 	"Software": {
 		"MinimumVersion": "5.0"
 	},
@@ -33,7 +33,7 @@
 				}
 			],
 			"Tooltip": "Precise and pauseable chronometer, especially suitable for long periods",
-      "UUID": "com.x7bit.timers.chrono",
+			"UUID": "com.x7bit.timers.chrono",
 			"PropertyInspectorPath": "actions/chrono/property-inspector/inspector.html"
 		},
 		{
@@ -46,7 +46,7 @@
 				}
 			],
 			"Tooltip": "Precise and pauseable countdown timer, especially suitable for long periods",
-      "UUID": "com.x7bit.timers.countdown",
+			"UUID": "com.x7bit.timers.countdown",
 			"PropertyInspectorPath": "actions/countdown/property-inspector/inspector.html"
 		},
 		{
@@ -59,7 +59,7 @@
 				}
 			],
 			"Tooltip": "Precise and pauseable interval timer",
-      "UUID": "com.x7bit.timers.interval",
+			"UUID": "com.x7bit.timers.interval",
 			"PropertyInspectorPath": "actions/interval/property-inspector/inspector.html"
 		}
 	]
