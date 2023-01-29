@@ -1,11 +1,12 @@
-# DistributionTool
+# Deploy tools
 DistributionTool.exe
-
-# Deploy batch script
 deploy.bat
 
 # Release binaries
-release/
+_release/
+
+# Templates (assets)
+_templates/
 
 # Misc
 package.json

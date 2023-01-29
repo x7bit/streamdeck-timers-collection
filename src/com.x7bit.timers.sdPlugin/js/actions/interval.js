@@ -1,13 +1,15 @@
-/// <reference path="../libs/js/stream-deck.js" />
-/// <reference path="helper.js" />
+/// <reference path="../../libs/js/stream-deck.js" />
+/// <reference path="../common/audio.js" />
+/// <reference path="../common/settings.js" />
 
-class CountdownTimer {
+class IntervalTimer {
 
 	constructor(context, settings) {
 		this.context = context;
+		this.round = getIntegerSetting(settings, 'round', 1);
 		this.isRenderFrozen = false;
 		this.intervalId = null;
-		this.canvasTimer = new CanvasCountdownTimer(context);
+		this.canvasTimer = new CanvasIntervalTimer(context);
 
 		this.loadState(settings, true);
 
@@ -50,6 +52,7 @@ class CountdownTimer {
 
 	saveState() {
 		const payload = {
+			round: this.round,
 			hours: this.hours.toString(),
 			minutes: this.minutes.toString(),
 			seconds: this.seconds.toString(),
@@ -61,12 +64,11 @@ class CountdownTimer {
 	}
 
 	shortPress(nowMs) {
-		if (this.isRunning) {
-			this.pause(nowMs);
+		if (this.alarmAudio.isPlaying) {
+			this.alarmAudio.stop();
 		} else {
-			if (this.alarmAudio.isPlaying()) {
-				this.alarmAudio.stop();
-				this.reset();
+			if (this.isRunning) {
+				this.pause(nowMs);
 			} else {
 				this.start(nowMs);
 			}
@@ -121,6 +123,7 @@ class CountdownTimer {
 	}
 
 	reset() {
+		this.round = 1;
 		this.timerStartMs = null;
 		this.pauseStartMs = null;
 		this.isRunning = false;
@@ -150,11 +153,13 @@ class CountdownTimer {
 			const elapsedSec = this.getElapsedSec(nowMs);
 			if (elapsedSec < this.goalSec) {
 				if (!this.isRenderFrozen) {
-					this.canvasTimer.drawTimer(elapsedSec, this.goalSec, this.isRunning);
+					this.canvasTimer.drawTimer(elapsedSec, this.goalSec, this.round, this.isRunning);
 				}
 			} else {
-				this.reset();
-				$SD.showOk(this.context);
+				this.round++;
+				this.timerStartMs = nowMs ?? Date.now();
+				this.pauseStartMs = null;
+				this.canvasTimer.drawTimer(0, this.goalSec, this.round, this.isRunning);
 				this.alarmAudio.play();
 			}
 		} else {
@@ -167,7 +172,7 @@ class CountdownTimer {
 	}
 };
 
-class CanvasCountdownTimer {
+class CanvasIntervalTimer {
 
 	constructor(context) {
 		this.context = context;
@@ -177,31 +182,41 @@ class CanvasCountdownTimer {
 		this.ctx = this.canvas.getContext('2d');
 	}
 
-	drawTimer(elapsedSec, goalSec, isRunning) {
+	drawTimer(elapsedSec, goalSec, round, isRunning) {
 		const img = document.getElementById(isRunning ? 'timer-bg-running' : 'timer-bg-pause');
 		this.ctx.fillStyle = '#000';
 		this.ctx.fillRect(0, 0, 144, 144);
 		this.ctx.drawImage(img, 0, 0, 144, 144);
-		this.drawTimerInner(elapsedSec, goalSec, isRunning);
+		this.drawTimerInner(elapsedSec, goalSec, round, isRunning);
 		$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
 	}
 
-	drawTimerInner(elapsedSec, goalSec, isRunning) {
-		//Foreground Text
+	drawTimerInner(elapsedSec, goalSec, round, isRunning) {
+		//Foreground Text (remaining)
 		const remainingText = this.getRemainingText(elapsedSec, goalSec);
-		const fSize = this.getFontSize(remainingText.length);
-		const fSizeThird = fSize / 3;
+		const fSizeRem = this.getRemainingFontSize(remainingText.length);
+		const fSizeRemThird = fSizeRem / 3;
+		const posYRem = ((144 + fSizeRemThird) / 2) + 4;
 		this.ctx.fillStyle = isRunning ? '#5881e0' : '#606060';
-		this.ctx.font = `${fSize}px arial`;
+		this.ctx.font = `${fSizeRem}px arial`;
 		this.ctx.textBaseline = 'middle';
 		this.ctx.textAlign = 'center';
-		this.ctx.fillText(remainingText, 72, (140 + fSizeThird) / 2);
+		this.ctx.fillText(remainingText, 72, posYRem);
+		//Foreground Text (round)
+		const roundText = `Round ${round}`;
+		const fSizeRnd = this.getRoundFontSize(round);
+		const fSizeRndThird = fSizeRnd / 3;
+		this.ctx.fillStyle = isRunning ? '#5881e0' : '#606060';
+		this.ctx.font = `${fSizeRnd}px arial`;
+		this.ctx.textBaseline = 'middle';
+		this.ctx.textAlign = 'center';
+		this.ctx.fillText(roundText, 72, posYRem - fSizeRem + fSizeRndThird);
 		//Foreground Circles
 		if (isRunning) {
 			for (let i = 0; i < 3 && i <= elapsedSec; i++) {
 				const circleOffset = (Math.abs(((elapsedSec + 3 - i) % 4) - 2) - 1) * 14;
 				this.ctx.beginPath();
-				this.ctx.arc(72 + circleOffset, 96 + fSizeThird, 6, 0, 2 * Math.PI, false);
+				this.ctx.arc(72 + circleOffset, 100 + fSizeRemThird, 6, 0, 2 * Math.PI, false);
 				this.ctx.fillStyle = this.getCircleColor(i);
 				this.ctx.fill();
 				if (i == 1 && circleOffset !== 0) {
@@ -229,11 +244,18 @@ class CanvasCountdownTimer {
 		);
 	}
 
-	getFontSize(len) {
+	getRemainingFontSize(len) {
 		if (len <= 5) {
 			return 38;
 		}
 		return len > 7 ? 32 - len / 2 : 32;
+	}
+
+	getRoundFontSize(round) {
+		if (round <= 9) {
+			return 23;
+		}
+		return 21;
 	}
 
 	getCircleColor(index) {

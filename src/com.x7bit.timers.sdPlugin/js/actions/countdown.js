@@ -1,13 +1,15 @@
-/// <reference path="../libs/js/stream-deck.js" />
-/// <reference path="helper.js" />
+/// <reference path="../../libs/js/stream-deck.js" />
+/// <reference path="../common/settings.js" />
 
-class ChronoTimer {
+class CountdownTimer {
 
 	constructor(context, settings) {
 		this.context = context;
 		this.isRenderFrozen = false;
 		this.intervalId = null;
-		this.canvasTimer = new CanvasChronoTimer(context);
+		this.canvasTimer = new CanvasCountdownTimer(context);
+
+		this.loadState(settings, true);
 
 		const timerStartMs = getIntegerSetting(settings, 'timerStartMs', null);
 		const pauseStartMs = getIntegerSetting(settings, 'pauseStartMs', null);
@@ -29,11 +31,28 @@ class ChronoTimer {
 	}
 
 	loadState(settings, isInit) {
-		//
+		this.hours = getIntegerSetting(settings, 'hours', 1);
+		this.minutes = getIntegerSetting(settings, 'minutes');
+		this.seconds = getIntegerSetting(settings, 'seconds');
+
+		const goalSec = this.hours * 3600 + this.minutes * 60 + this.seconds;
+		if (isInit) {
+			this.goalSec = goalSec;
+			this.alarmAudio = new AudioHandler(settings);
+		} else {
+			if (this.goalSec !== goalSec) {
+				this.goalSec = goalSec;
+				this.drawTimer();
+			}
+			this.alarmAudio.loadState(settings, false);
+		}
 	}
 
 	saveState() {
 		const payload = {
+			hours: this.hours.toString(),
+			minutes: this.minutes.toString(),
+			seconds: this.seconds.toString(),
 			timerStartMs: this.timerStartMs,
 			pauseStartMs: this.pauseStartMs,
 			isRunning: this.isRunning,
@@ -45,7 +64,12 @@ class ChronoTimer {
 		if (this.isRunning) {
 			this.pause(nowMs);
 		} else {
-			this.start(nowMs);
+			if (this.alarmAudio.isPlaying) {
+				this.alarmAudio.stop();
+				this.reset();
+			} else {
+				this.start(nowMs);
+			}
 		}
 	}
 
@@ -68,17 +92,21 @@ class ChronoTimer {
 
 	start(nowMs) {
 		if (!this.isRunning) {
-			if (this.isStarted()) {
-				const pauseElapsedMs = nowMs - this.pauseStartMs;
-				this.timerStartMs += pauseElapsedMs;
+			if (this.goalSec > 0) {
+				if (this.isStarted()) {
+					const pauseElapsedMs = nowMs - this.pauseStartMs;
+					this.timerStartMs += pauseElapsedMs;
+				} else {
+					this.timerStartMs = nowMs;
+				}
+				this.pauseStartMs = null;
+				this.isRunning = true;
+				this.drawTimer(nowMs);
+				this.addInterval();
+				this.saveState();
 			} else {
-				this.timerStartMs = nowMs;
+				$SD.showAlert(this.context);
 			}
-			this.pauseStartMs = null;
-			this.isRunning = true;
-			this.drawTimer(nowMs);
-			this.addInterval();
-			this.saveState();
 		}
 	}
 
@@ -120,8 +148,14 @@ class ChronoTimer {
 	drawTimer(nowMs = null) {
 		if (this.isStarted()) {
 			const elapsedSec = this.getElapsedSec(nowMs);
-			if (!this.isRenderFrozen) {
-				this.canvasTimer.drawTimer(elapsedSec, this.isRunning);
+			if (elapsedSec < this.goalSec) {
+				if (!this.isRenderFrozen) {
+					this.canvasTimer.drawTimer(elapsedSec, this.goalSec, this.isRunning);
+				}
+			} else {
+				this.reset();
+				$SD.showOk(this.context);
+				this.alarmAudio.play();
 			}
 		} else {
 			$SD.setImage(this.context);
@@ -133,7 +167,7 @@ class ChronoTimer {
 	}
 };
 
-class CanvasChronoTimer {
+class CanvasCountdownTimer {
 
 	constructor(context) {
 		this.context = context;
@@ -143,18 +177,18 @@ class CanvasChronoTimer {
 		this.ctx = this.canvas.getContext('2d');
 	}
 
-	drawTimer(elapsedSec, isRunning) {
+	drawTimer(elapsedSec, goalSec, isRunning) {
 		const img = document.getElementById(isRunning ? 'timer-bg-running' : 'timer-bg-pause');
 		this.ctx.fillStyle = '#000';
 		this.ctx.fillRect(0, 0, 144, 144);
 		this.ctx.drawImage(img, 0, 0, 144, 144);
-		this.drawTimerInner(elapsedSec, isRunning);
+		this.drawTimerInner(elapsedSec, goalSec, isRunning);
 		$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
 	}
 
-	drawTimerInner(elapsedSec, isRunning) {
+	drawTimerInner(elapsedSec, goalSec, isRunning) {
 		//Foreground Text
-		const remainingText = this.getElapsedText(elapsedSec);
+		const remainingText = this.getRemainingText(elapsedSec, goalSec);
 		const fSize = this.getFontSize(remainingText.length);
 		const fSizeThird = fSize / 3;
 		this.ctx.fillStyle = isRunning ? '#5881e0' : '#606060';
@@ -183,12 +217,13 @@ class CanvasChronoTimer {
 		$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
 	}
 
-	getElapsedText(elapsedSec) {
-		const hours = Math.floor(elapsedSec / 3600);
-		const mins = Math.floor((elapsedSec % 3600) / 60);
-		const secs = elapsedSec % 60;
+	getRemainingText(elapsedSec, goalSec) {
+		const totalSec = goalSec - elapsedSec;
+		const hours = Math.floor(totalSec / 3600);
+		const mins = Math.floor((totalSec % 3600) / 60);
+		const secs = totalSec % 60;
 		return (
-			elapsedSec < 3600 ?
+			goalSec < 3600 ?
 			`${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}` :
 			`${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 		);
