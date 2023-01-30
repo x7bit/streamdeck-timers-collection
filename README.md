@@ -8,13 +8,6 @@ The `Timers Collection` is a Javascript plugin for [Stream Deck](https://develop
 
 Precise and pauseable timers collection, especially suitable for long periods. Since the default timer (from the *Stream Deck* category) is quite inaccurate for periods of many hours, the `Timers Collection` plugin was developed with the idea of using it for long periods, such as workdays. To do this, the plugin saves the system time when the timer starts, and calculates the difference. This ensures that the measurement is accurate even when the timer is set to many hours.
 
-## Timers List
-
-- Chronometer
-- Countdown Timer
-- Interval Timer
-- Pomodoro Timer (incoming on next release)
-
 ## Features:
 
 - Pauseable: press the key to pause/resume it
@@ -23,6 +16,18 @@ Precise and pauseable timers collection, especially suitable for long periods. S
 - Persistent: immune to restarts, both of the computer and the Stream Deck application
 - Multiple: allows multiple instances
 - Cross-platform: macOS, Windows
+
+## Timers List
+
+- Chronometer
+- Countdown Timer
+- Interval Timer (with optional break periods between intervals)
+- Pomodoro Timer (incoming on next release)
+
+## Controls
+- Short click: pause o resume the timer (or stop the sound if playing)
+- Long click (2 seconds or more): reset the timer
+- Double click (only interval timer): advance to the next period
 
 ## Localization
 
