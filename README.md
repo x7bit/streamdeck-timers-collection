@@ -1,8 +1,6 @@
-# Precise Timer
+# Timers Collection
 
-The `Timers Collection` is a Javascript plugin for [Stream Deck](https://developer.elgato.com/documentation/stream-deck/).
-
-`Timers Collection` requires Stream Deck 5.0 or later.
+The `Timers Collection` is a Javascript plugin for [Stream Deck](https://developer.elgato.com/documentation/stream-deck/). Requires Stream Deck 5.0 or later.
 
 ## Description
 
