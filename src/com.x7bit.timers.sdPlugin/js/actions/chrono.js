@@ -128,8 +128,8 @@ class ChronoTimer {
 		}
 	}
 
-	drawClearImage() {
-		this.canvasTimer.drawClearImage();
+	drawClear() {
+		this.canvasTimer.drawClear();
 	}
 };
 
@@ -176,7 +176,7 @@ class CanvasChronoTimer {
 		}
 	}
 
-	drawClearImage() {
+	drawClear() {
 		this.ctx.clearRect(0, 0, 144, 144);
 		$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
 	}

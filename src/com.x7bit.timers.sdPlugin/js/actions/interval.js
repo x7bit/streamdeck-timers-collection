@@ -8,6 +8,7 @@ class IntervalTimer {
 		this.context = context;
 		this.round = getIntegerSetting(settings, 'round', 1);
 		this.isBreak = getBooleanSetting(settings, 'break');
+		this.prevPressMs = getIntegerSetting(settings, 'prevPressMs');
 		this.isRenderFrozen = false;
 		this.intervalId = null;
 		this.canvasTimer = new CanvasIntervalTimer(context);
@@ -67,6 +68,7 @@ class IntervalTimer {
 			breakSeconds: this.breakSeconds.toString(),
 			timerStartMs: this.timerStartMs,
 			pauseStartMs: this.pauseStartMs,
+			prevPressMs: this.prevPressMs,
 			isRunning: this.isRunning,
 		};
 		$SD.setSettings(this.context, payload);
@@ -76,16 +78,42 @@ class IntervalTimer {
 		if (this.alarmAudio.isPlaying) {
 			this.alarmAudio.stop();
 		} else {
-			if (this.isRunning) {
-				this.pause(nowMs);
-			} else {
-				this.start(nowMs);
+			if ((nowMs - this.prevPressMs) < 500) {  //Double click
+				this.prevPressMs = 0;
+				this.gotoNextPeriod(nowMs);
+				this.shortPressCore(nowMs);
+			} else {  //Single click
+				this.prevPressMs = nowMs;
+				this.shortPressCore(nowMs);
 			}
 		}
 	}
 
 	longPress(nowMs) {
 		this.reset();
+	}
+
+	shortPressCore(nowMs) {
+		if (this.isRunning) {
+			this.pause(nowMs);
+		} else {
+			this.start(nowMs);
+		}
+	}
+
+	gotoNextPeriod(nowMs = null) {
+		const hasBreak = this.breakGoalSec > 0;
+		if (this.isBreak || !hasBreak) {
+			this.round++;
+			this.isBreak = false;
+			this.canvasTimer.drawTimer(0, this.goalSec, this.round, this.isBreak, this.isRunning);
+		} else {
+			this.isBreak = true;
+			this.canvasTimer.drawTimer(0, this.breakGoalSec, this.round, this.isBreak, this.isRunning);
+		}
+		nowMs = nowMs ?? Date.now();
+		this.timerStartMs = nowMs;
+		this.pauseStartMs = this.isRunning ? null : nowMs;
 	}
 
 	isStarted() {
@@ -167,18 +195,7 @@ class IntervalTimer {
 					this.canvasTimer.drawTimer(elapsedSec, goalSec, this.round, this.isBreak, this.isRunning);
 				}
 			} else {
-				const hasBreak = this.breakGoalSec > 0;
-				if (this.isBreak || !hasBreak) {
-					this.round++;
-					this.isBreak = false;
-					goalSec = this.goalSec;
-				} else {
-					this.isBreak = true;
-					goalSec = this.breakGoalSec;
-				}
-				this.timerStartMs = nowMs ?? Date.now();
-				this.pauseStartMs = null;
-				this.canvasTimer.drawTimer(0, goalSec, this.round, this.isBreak, this.isRunning);
+				this.gotoNextPeriod(nowMs);
 				this.alarmAudio.play();
 			}
 		} else {
@@ -186,8 +203,8 @@ class IntervalTimer {
 		}
 	}
 
-	drawClearImage() {
-		this.canvasTimer.drawClearImage();
+	drawClear() {
+		this.canvasTimer.drawClear();
 	}
 };
 
@@ -244,7 +261,7 @@ class CanvasIntervalTimer {
 		}
 	}
 
-	drawClearImage() {
+	drawClear() {
 		this.ctx.clearRect(0, 0, 144, 144);
 		$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
 	}

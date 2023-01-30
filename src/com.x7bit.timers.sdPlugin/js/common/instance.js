@@ -6,7 +6,7 @@ class Instance {
 
 	constructor(uuid, context, payload) {
 		this.context = context;
-		this.keyDownMs = null;
+		this.keyDownMs = 0;
 		this.longPressTimeoutId = null;
 
 		const settings = payload.settings ?? {};
@@ -43,7 +43,7 @@ class Instance {
 	onKeyDown() {
 		this.keyDownMs = Date.now();
 		this.longPressTimeoutId = setTimeout(() => {
-			this.timer.drawClearImage();
+			this.timer.drawClear();
 			$SD.showAlert(this.context);
 		}, 2000);
 		this.timer.isRenderFrozen = true;
