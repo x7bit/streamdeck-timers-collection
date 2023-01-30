@@ -1,0 +1,22 @@
+{
+	"Description": "Timers collection, precise, pauseable and especially suitable for long periods",
+	"Name": "Timers Collection",
+	"Category": "Timers Collection",
+	"com.x7bit.timers.chrono": {
+		"Name": "Chronometer",
+		"Tooltip": "Precise and pauseable chronometer, especially suitable for long periods"
+	},
+	"com.x7bit.timers.countdown": {
+		"Name": "Countdown Timer",
+		"Tooltip": "Precise and pauseable countdown timer, especially suitable for long periods"
+	},
+	"com.x7bit.timers.interval": {
+		"Name": "Interval Timer",
+		"Tooltip": "Precise and pauseable interval timer"
+	},
+	"Localization": {
+		"Hours": "Hours",
+		"Minutes": "Minutes",
+		"Seconds": "Seconds"
+	}
+}

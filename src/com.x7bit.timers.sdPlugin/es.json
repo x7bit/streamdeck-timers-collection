@@ -1,0 +1,22 @@
+{
+	"Description": "Colección de temporizadores, precisos, pausables y especialmente indicados para periodos largos",
+	"Name": "Colección de Temporizadores",
+	"Category": "Colección de Temporizadores",
+	"com.x7bit.timers.chrono": {
+		"Name": "Cronómetro",
+		"Tooltip": "Cronómetro preciso y pausable, especialmente indicado para periodos largos"
+	},
+	"com.x7bit.timers.countdown": {
+		"Name": "Temporizador de Cuenta Atrás",
+		"Tooltip": "Temporizador preciso y pausable, especialmente indicado para periodos largos"
+	},
+	"com.x7bit.timers.interval": {
+		"Name": "Temporizador de Intervalos",
+		"Tooltip": "Temporizador de intervalos preciso y pausable"
+	},
+	"Localization": {
+		"Hours": "Horas",
+		"Minutes": "Minutos",
+		"Seconds": "Segundos"
+	}
+}

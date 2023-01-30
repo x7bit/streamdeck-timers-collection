@@ -1,0 +1,66 @@
+{
+	"SDKVersion": 2,
+	"Author": "x7bit",
+	"CodePath": "app.html",
+	"Description": "Precise and pauseable timers collection, especially suitable for long periods",
+	"Name": "Timers Collection",
+	"Icon": "actions/countdown/images/action",
+	"URL": "https://github.com/x7bit/streamdeck-precise-timer",
+	"Version": "1.9.9.9",
+	"Software": {
+		"MinimumVersion": "5.0"
+	},
+	"OS": [
+		{
+			"Platform": "mac",
+			"MinimumVersion": "10.11"
+		},
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Category": "Timers Collection",
+	"CategoryIcon": "assets/images/category",
+	"Actions": [
+		{
+			"Icon": "actions/chrono/images/actionimage",
+			"Name": "Chronometer",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "actions/chrono/images/action"
+				}
+			],
+			"Tooltip": "Precise and pauseable chronometer, especially suitable for long periods",
+			"UUID": "com.x7bit.timers.chrono",
+			"PropertyInspectorPath": "actions/chrono/property-inspector/inspector.html"
+		},
+		{
+			"Icon": "actions/countdown/images/actionimage",
+			"Name": "Countdown Timer",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "actions/countdown/images/action"
+				}
+			],
+			"Tooltip": "Precise and pauseable countdown timer, especially suitable for long periods",
+			"UUID": "com.x7bit.timers.countdown",
+			"PropertyInspectorPath": "actions/countdown/property-inspector/inspector.html"
+		},
+		{
+			"Icon": "actions/interval/images/actionimage",
+			"Name": "Interval Timer",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "actions/interval/images/action"
+				}
+			],
+			"Tooltip": "Precise and pauseable interval timer",
+			"UUID": "com.x7bit.timers.interval",
+			"PropertyInspectorPath": "actions/interval/property-inspector/inspector.html"
+		}
+	]
+}
