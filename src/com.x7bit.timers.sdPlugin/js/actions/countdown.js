@@ -57,7 +57,7 @@ class CountdownTimer {
 			pauseStartMs: this.pauseStartMs,
 			isRunning: this.isRunning,
 		};
-		$SD.setSettings(this.context, payload);
+		$SD.setSettings(this.context, Object.assign(payload, this.alarmAudio.getSaveState()));
 	}
 
 	shortPress(nowMs) {
