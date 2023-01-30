@@ -7,6 +7,7 @@ class IntervalTimer {
 	constructor(context, settings) {
 		this.context = context;
 		this.round = getIntegerSetting(settings, 'round', 1);
+		this.isBreak = getBooleanSetting(settings, 'break');
 		this.isRenderFrozen = false;
 		this.intervalId = null;
 		this.canvasTimer = new CanvasIntervalTimer(context);
@@ -36,14 +37,19 @@ class IntervalTimer {
 		this.hours = getIntegerSetting(settings, 'hours', 1);
 		this.minutes = getIntegerSetting(settings, 'minutes');
 		this.seconds = getIntegerSetting(settings, 'seconds');
+		this.breakMinutes = getIntegerSetting(settings, 'breakMinutes');
+		this.breakSeconds = getIntegerSetting(settings, 'breakSeconds');
 
 		const goalSec = this.hours * 3600 + this.minutes * 60 + this.seconds;
+		const breakGoalSec = this.breakMinutes * 60 + this.breakSeconds;
 		if (isInit) {
 			this.goalSec = goalSec;
+			this.breakGoalSec = breakGoalSec;
 			this.alarmAudio = new AudioHandler(settings);
 		} else {
-			if (this.goalSec !== goalSec) {
+			if (this.goalSec !== goalSec || this.breakGoalSec !== breakGoalSec) {
 				this.goalSec = goalSec;
+				this.breakGoalSec = breakGoalSec;
 				this.drawTimer();
 			}
 			this.alarmAudio.loadState(settings, false);
@@ -53,9 +59,12 @@ class IntervalTimer {
 	saveState() {
 		const payload = {
 			round: this.round,
+			break: this.isBreak,
 			hours: this.hours.toString(),
 			minutes: this.minutes.toString(),
 			seconds: this.seconds.toString(),
+			breakMinutes: this.breakMinutes.toString(),
+			breakSeconds: this.breakSeconds.toString(),
 			timerStartMs: this.timerStartMs,
 			pauseStartMs: this.pauseStartMs,
 			isRunning: this.isRunning,
@@ -124,6 +133,7 @@ class IntervalTimer {
 
 	reset() {
 		this.round = 1;
+		this.isBreak = false;
 		this.timerStartMs = null;
 		this.pauseStartMs = null;
 		this.isRunning = false;
@@ -150,16 +160,25 @@ class IntervalTimer {
 
 	drawTimer(nowMs = null) {
 		if (this.isStarted()) {
+			let goalSec = this.isBreak ? this.breakGoalSec : this.goalSec;
 			const elapsedSec = this.getElapsedSec(nowMs);
-			if (elapsedSec < this.goalSec) {
+			if (elapsedSec < goalSec) {
 				if (!this.isRenderFrozen) {
-					this.canvasTimer.drawTimer(elapsedSec, this.goalSec, this.round, this.isRunning);
+					this.canvasTimer.drawTimer(elapsedSec, goalSec, this.round, this.isBreak, this.isRunning);
 				}
 			} else {
-				this.round++;
+				const hasBreak = this.breakGoalSec > 0;
+				if (this.isBreak || !hasBreak) {
+					this.round++;
+					this.isBreak = false;
+					goalSec = this.goalSec;
+				} else {
+					this.isBreak = true;
+					goalSec = this.breakGoalSec;
+				}
 				this.timerStartMs = nowMs ?? Date.now();
 				this.pauseStartMs = null;
-				this.canvasTimer.drawTimer(0, this.goalSec, this.round, this.isRunning);
+				this.canvasTimer.drawTimer(0, goalSec, this.round, this.isBreak, this.isRunning);
 				this.alarmAudio.play();
 			}
 		} else {
@@ -182,16 +201,15 @@ class CanvasIntervalTimer {
 		this.ctx = this.canvas.getContext('2d');
 	}
 
-	drawTimer(elapsedSec, goalSec, round, isRunning) {
+	drawTimer(elapsedSec, goalSec, round, isBreak, isRunning) {
 		const img = document.getElementById(isRunning ? 'timer-bg-running' : 'timer-bg-pause');
-		this.ctx.fillStyle = '#000';
-		this.ctx.fillRect(0, 0, 144, 144);
+		this.ctx.clearRect(0, 0, 144, 144);
 		this.ctx.drawImage(img, 0, 0, 144, 144);
-		this.drawTimerInner(elapsedSec, goalSec, round, isRunning);
+		this.drawTimerInner(elapsedSec, goalSec, round, isBreak, isRunning);
 		$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
 	}
 
-	drawTimerInner(elapsedSec, goalSec, round, isRunning) {
+	drawTimerInner(elapsedSec, goalSec, round, isBreak, isRunning) {
 		//Foreground Text (remaining)
 		const remainingText = this.getRemainingText(elapsedSec, goalSec);
 		const fSizeRem = this.getRemainingFontSize(remainingText.length);
@@ -203,7 +221,7 @@ class CanvasIntervalTimer {
 		this.ctx.textAlign = 'center';
 		this.ctx.fillText(remainingText, 72, posYRem);
 		//Foreground Text (round)
-		const roundText = `Round ${round}`;
+		const roundText = `${(isBreak ? 'Break' : 'Round')} ${round}`;
 		const fSizeRnd = this.getRoundFontSize(round);
 		const fSizeRndThird = fSizeRnd / 3;
 		this.ctx.fillStyle = isRunning ? '#5881e0' : '#606060';
@@ -227,8 +245,7 @@ class CanvasIntervalTimer {
 	}
 
 	drawClearImage() {
-		this.ctx.fillStyle = '#000';
-		this.ctx.fillRect(0, 0, 144, 144);
+		this.ctx.clearRect(0, 0, 144, 144);
 		$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
 	}
 

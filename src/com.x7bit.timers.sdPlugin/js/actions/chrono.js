@@ -145,8 +145,7 @@ class CanvasChronoTimer {
 
 	drawTimer(elapsedSec, isRunning) {
 		const img = document.getElementById(isRunning ? 'timer-bg-running' : 'timer-bg-pause');
-		this.ctx.fillStyle = '#000';
-		this.ctx.fillRect(0, 0, 144, 144);
+		this.ctx.clearRect(0, 0, 144, 144);
 		this.ctx.drawImage(img, 0, 0, 144, 144);
 		this.drawTimerInner(elapsedSec, isRunning);
 		$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
@@ -178,8 +177,7 @@ class CanvasChronoTimer {
 	}
 
 	drawClearImage() {
-		this.ctx.fillStyle = '#000';
-		this.ctx.fillRect(0, 0, 144, 144);
+		this.ctx.clearRect(0, 0, 144, 144);
 		$SD.setImage(this.context, this.canvas.toDataURL('image/png'));
 	}
 
