@@ -15,8 +15,29 @@
 		"Tooltip": "Precise and pauseable interval timer"
 	},
 	"Localization": {
+		"Countdown Time": "Countdown Time",
+		"Interval Time": "Interval Time",
+		"Break Time": "Break Time",
+		"Audio": "Audio",
+		"More Info": "More Info",
 		"Hours": "Hours",
 		"Minutes": "Minutes",
-		"Seconds": "Seconds"
+		"Seconds": "Seconds",
+		"Sound": "Sound",
+		"Custom Sound": "Custom Sound",
+		"Volume": "Volume",
+		"Loops": "Loops",
+		"Preview": "Preview",
+		"Alarm Clock": "Alarm Clock",
+		"Church Bell": "Church Bell",
+		"Old Phone": "Old Phone",
+		"Emergency": "Emergency",
+		"Japan EAS": "Japan EAS",
+		"Custom": "Custom",
+		"None": "None",
+		"No file selected...": "No file selected...",
+		"Choose file...": "Choose file...",
+		"File error": "File error",
+		"Links": "Links"
 	}
 }

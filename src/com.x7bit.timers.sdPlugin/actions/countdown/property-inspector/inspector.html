@@ -10,6 +10,13 @@
 		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 		<title>com.x7bit.timers.countdown Property Inspector</title>
 		<link rel="stylesheet" href="../../../libs/css/sdpi.css" />
+		<style>
+			.sdpi-file-info {
+				min-width: 217px;
+				max-width: inherit;
+				border: 1pt solid #646464FF;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="sdpi-wrapper">
@@ -46,10 +53,11 @@
 							<select class="sdpi-item-value select" name="audioId" id="audio-select">
 								<option value="gong">Gong</option>
 								<option value="ding">Ding</option>
-								<option value="church-bell">Church Bell</option>
-								<option value="alarm-clock">Alarm Clock</option>
-								<option value="emergency">Emergency</option>
-								<option value="japan-eas">Japan EAS</option>
+								<option value="alarm-clock" data-localize>Alarm Clock</option>
+								<option value="church-bell" data-localize>Church Bell</option>
+								<option value="old-phone" data-localize>Old Phone</option>
+								<option value="emergency" data-localize>Emergency</option>
+								<option value="japan-eas" data-localize>Japan EAS</option>
 								<option value="custom" data-localize>Custom</option>
 								<option value="none" data-localize>None</option>
 							</select>
@@ -60,7 +68,6 @@
 							<div class="sdpi-item-group file">
 									<input class="sdpi-item-value" type="file" id="audio-file" accept=".mp3, .wav">
 									<label class="sdpi-file-info" for="audio-file" id="audio-file-label" data-localize>No file selected...</label>
-									<label class="sdpi-file-label" for="audio-file" data-localize>Choose file...</label>
 							</div>
 						</div>
 
@@ -122,6 +129,7 @@
 
 		<!-- Property Inspector Source -->
 		<script src="inspector.js"></script>
+		<script src="../../../js/common-pi/localize.js"></script>
 		<script src="../../../js/common-pi/audio-pi.js"></script>
 
 		<!-- For Audio Preview -->
@@ -133,5 +141,6 @@
 		<audio id="emergency" src="../../../assets/audio/emergency.mp3" preload="auto"></audio>
 		<audio id="gong" src="../../../assets/audio/gong.mp3" preload="auto"></audio>
 		<audio id="japan-eas" src="../../../assets/audio/japan-eas.mp3" preload="auto"></audio>
+		<audio id="old-phone" src="../../../assets/audio/old-phone.mp3" preload="auto"></audio>
 	</body>
 </html>

@@ -15,8 +15,29 @@
 		"Tooltip": "Temporizador de intervalos preciso y pausable"
 	},
 	"Localization": {
+		"Countdown Time": "Tiempo de Cuenta Atrás Time",
+		"Interval Time": "Tiempo de Intervalo",
+		"Break Time": "Tiempo de Interludio",
+		"Audio": "Audio",
+		"More Info": "Más Info",
 		"Hours": "Horas",
 		"Minutes": "Minutos",
-		"Seconds": "Segundos"
+		"Seconds": "Segundos",
+		"Sound": "Sonido",
+		"Custom Sound": "Personalizado",
+		"Volume": "Volumen",
+		"Loops": "Bucles",
+		"Preview": "Vista Previa",
+		"Alarm Clock": "Despertador",
+		"Church Bell": "Campana de Iglesia",
+		"Old Phone": "Teléfono Antiguo",
+		"Emergency": "Emergencia",
+		"Japan EAS": "EAS de Japón",
+		"Custom": "Personalizado",
+		"None": "Ninguno",
+		"No file selected...": "Ningún archivo seleccionado...",
+		"Choose file...": "Archivo...",
+		"File error": "Error en archivo",
+		"Links": "Enlaces"
 	}
 }

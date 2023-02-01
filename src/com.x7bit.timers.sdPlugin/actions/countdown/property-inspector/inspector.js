@@ -1,9 +1,12 @@
 /// <reference path="../../../libs/js/property-inspector.js" />
 /// <reference path="../../../libs/js/utils.js" />
-/// <reference path="../../../js/common/audio.js" />
+/// <reference path="../../../js/common-pi/localize.js" />
 /// <reference path="../../../js/common-pi/audio-pi.js" />
+/// <reference path="../../../js/common/audio.js" />
 
 $PI.onConnected((jsn) => {
+	$PI.loadLocalization('../../../');
+
 	const { actionInfo /*, appInfo, connection, messageType, port, uuid*/ } = jsn;
 	const { payload /*, context*/ } = actionInfo;
 	const { settings } = payload;
@@ -11,10 +14,10 @@ $PI.onConnected((jsn) => {
 	const audio = new AudioHandler(settings, customAudioError);
 
 	//Form Set
-	$PI.loadLocalization('../../../');
 	Utils.setFormValue(settings, form);
 	toogleAudioControls(settings.audioId);
 	setFilePicker(settings);
+	$PI.on('localizationLoaded', () => localizeUI());
 
 	//Inputs Listener
 	form.querySelectorAll('input').forEach(input => input.oninput = Utils.debounce(150, (event) => {

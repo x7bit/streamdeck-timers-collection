@@ -1,5 +1,6 @@
 /// <reference path="../../libs/js/utils.js" />
 /// <reference path="../common/audio.js" />
+/// <reference path="localize.js" />
 
 const global = { customFile: null };
 
@@ -55,7 +56,7 @@ const toogleAudioControls = (audioId) => {
 const setFilePicker = (settings) => {
 	const customFile = settings.customFile ?? null;
 	global.customFile = customFile;
-	document.getElementById('audio-file-label').textContent = customFile ? customFile.split('/').pop() : 'No file selected...';
+	document.getElementById('audio-file-label').textContent = customFile ? customFile.split('/').pop() : localize('No file selected...');
 };
 
 /**
@@ -74,5 +75,5 @@ const playStop = (audio) => {
  * 
  */
 const customAudioError = () => {
-	document.getElementById('audio-file-label').textContent = 'File error / not found!';
+	document.getElementById('audio-file-label').textContent = localize('File error');
 }
