@@ -11,7 +11,7 @@ class AudioHandler {
 		this.audio = null;
 		this.remLoops = 0;
 		this.isPlaying = false;
-		this.loadState(settings, customErrorFunc);
+		this.loadSettingsPI(settings, customErrorFunc);
 	}
 
 	/**
@@ -19,7 +19,7 @@ class AudioHandler {
 	 * @param {Object} settings
 	 * @param {?Function} customErrorFunc
 	 */
-	loadState(settings, customErrorFunc = null) {
+	loadSettingsPI(settings, customErrorFunc = null) {
 		this.id = getStringSetting(settings, 'audioId', 'gong');
 		this.loops = getIntegerSetting(settings, 'audioLoops', 1);
 		this.volume = getIntegerSetting(settings, 'audioVolume', 100);

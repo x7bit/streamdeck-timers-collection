@@ -3,7 +3,7 @@
  * @param {Object} settings
  * @param {string} name
  * @param {string} defValue
- * @returns {string}
+ * @returns {?string} Default ''
  */
 const getStringSetting = (settings, name, defValue = '') => {
 	return settings.hasOwnProperty(name) && settings[name] ? String(settings[name]) : defValue;
@@ -14,7 +14,7 @@ const getStringSetting = (settings, name, defValue = '') => {
  * @param {Object} settings
  * @param {string} name
  * @param {number} defValue
- * @returns {number}
+ * @returns {?number} Default 0
  */
 const getIntegerSetting = (settings, name, defValue = 0) => {
 	if (settings.hasOwnProperty(name)) {
@@ -30,7 +30,7 @@ const getIntegerSetting = (settings, name, defValue = 0) => {
  * @param {Object} settings
  * @param {string} name
  * @param {boolean} defValue
- * @returns {boolean}
+ * @returns {boolean} Default false
  */
 const getBooleanSetting = (settings, name, defValue = false) => {
 	return settings.hasOwnProperty(name) ? !!settings[name] : defValue;

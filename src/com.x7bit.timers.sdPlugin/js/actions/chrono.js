@@ -9,26 +9,22 @@ class ChronoTimer {
 		this.intervalId = null;
 		this.canvasTimer = new CanvasChronoTimer(context);
 
+		// this.loadSettingsPI(settings, true);
+
 		const timerStartMs = getIntegerSetting(settings, 'timerStartMs', null);
-		const pauseStartMs = getIntegerSetting(settings, 'pauseStartMs', null);
-		const isRunning = getBooleanSetting(settings, 'isRunning');
+		this.timerStartMs = timerStartMs ? timerStartMs : null;
+		this.pauseStartMs = timerStartMs ? getIntegerSetting(settings, 'pauseStartMs', null) : null;
+		this.isRunning = timerStartMs ? getBooleanSetting(settings, 'isRunning') : false;
 
 		if (timerStartMs !== null) {
-			this.timerStartMs = timerStartMs;
-			this.pauseStartMs = pauseStartMs;
-			this.isRunning = isRunning;
 			this.drawTimer();
 			if (isRunning) {
 				this.addInterval();
 			}
-		} else {
-			this.timerStartMs = null;
-			this.pauseStartMs = null;
-			this.isRunning = false;
 		}
 	}
 
-	loadState(settings, isInit) {
+	loadSettingsPI(settings, isInit) {
 		//
 	}
 

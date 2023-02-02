@@ -23,7 +23,7 @@ $PI.onConnected((jsn) => {
 	form.querySelectorAll('input').forEach(input => input.oninput = Utils.debounce(150, (event) => {
 		const settings = getSettingsWithCustomFile(form);
 		if (event.target.name.startsWith('audio')) {
-			audio.loadState(settings, customAudioError);
+			audio.loadSettingsPI(settings, customAudioError);
 		}
 		$PI.setSettings(settings);
 	}));
@@ -32,7 +32,7 @@ $PI.onConnected((jsn) => {
 	document.getElementById('audio-select').oninput = () => {
 		const settings = getSettingsWithCustomFile(form);
 		toogleAudioControls(settings.audioId);
-		audio.loadState(settings, customAudioError);
+		audio.loadSettingsPI(settings, customAudioError);
 		$PI.setSettings(settings);
 	};
 
@@ -41,7 +41,7 @@ $PI.onConnected((jsn) => {
 		const settings = getSettingsWithCustomFile(form);
 		settings.customFile = getCustomFile(event.target.value);
 		setFilePicker(settings);
-		audio.loadState(settings, customAudioError);
+		audio.loadSettingsPI(settings, customAudioError);
 		$PI.setSettings(settings);
 	};
 
