@@ -14,6 +14,10 @@
 		"Name": "Temporizador de Intervalos",
 		"Tooltip": "Temporizador de intervalos preciso y pausable"
 	},
+	"com.x7bit.timers.pomodoro": {
+		"Name": "Temporizador de Pomodoro",
+		"Tooltip": "Temporizador de pomodoro preciso y pausable"
+	},
 	"Localization": {
 		"Countdown Time": "Tiempo de Cuenta Atrás Time",
 		"Interval Time": "Tiempo de Intervalo",

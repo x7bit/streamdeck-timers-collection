@@ -61,6 +61,19 @@
 			"Tooltip": "Precise and pauseable interval timer",
 			"UUID": "com.x7bit.timers.interval",
 			"PropertyInspectorPath": "actions/interval/property-inspector/inspector.html"
+		},
+		{
+			"Icon": "actions/pomodoro/images/actionimage",
+			"Name": "Pomodoro Timer",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "actions/pomodoro/images/action"
+				}
+			],
+			"Tooltip": "Precise and pauseable pomodoro timer",
+			"UUID": "com.x7bit.timers.pomodoro",
+			"PropertyInspectorPath": "actions/pomodoro/property-inspector/inspector.html"
 		}
 	]
 }

@@ -1,6 +1,7 @@
 /// <reference path="../actions/chrono.js" />
 /// <reference path="../actions/countdown.js" />
 /// <reference path="../actions/interval.js" />
+/// <reference path="../actions/pomodoro.js" />
 
 class Instance {
 
@@ -19,6 +20,9 @@ class Instance {
 				break;
 			case 'com.x7bit.timers.interval':
 				this.timer = new IntervalTimer(context, settings);
+				break;
+			case 'com.x7bit.timers.pomodoro':
+				this.timer = new PomodoroTimer(context, settings);
 				break;
 			default:
 				this.timer = null;

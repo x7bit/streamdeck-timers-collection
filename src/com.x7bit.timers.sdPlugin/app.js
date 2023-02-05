@@ -8,6 +8,7 @@ const uuids = [
 	'com.x7bit.timers.chrono',
 	'com.x7bit.timers.countdown',
 	'com.x7bit.timers.interval',
+	'com.x7bit.timers.pomodoro',
 ];
 
 for (const uuid of uuids) {

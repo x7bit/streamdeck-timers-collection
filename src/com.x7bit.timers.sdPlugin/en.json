@@ -14,6 +14,10 @@
 		"Name": "Interval Timer",
 		"Tooltip": "Precise and pauseable interval timer"
 	},
+	"com.x7bit.timers.pomodoro": {
+		"Name": "Pomodoro Timer",
+		"Tooltip": "Precise and pauseable pomodoro timer"
+	},
 	"Localization": {
 		"Countdown Time": "Countdown Time",
 		"Interval Time": "Interval Time",
