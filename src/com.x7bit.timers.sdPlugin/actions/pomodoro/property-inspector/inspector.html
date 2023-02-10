@@ -23,39 +23,22 @@
 			<form id="property-inspector">
 
 				<div type="group" class="sdpi-item">
-					<div class="sdpi-item-label" data-localize>Interval Time</div>
+					<div class="sdpi-item-label" data-localize>Pomodoro Time (minutes)</div>
 					<div class="sdpi-item-group">
 
 						<div class="sdpi-item">
-							<div class="sdpi-item-label" data-localize>Hours</div>
-							<input class="sdpi-item-value" name="hours" type="number" min="0" max="18" placeholder="1" />
+							<div class="sdpi-item-label" data-localize>Work</div>
+							<input class="sdpi-item-value" name="workTime" type="number" min="1" max="180" placeholder="25" />
 						</div>
 
 						<div class="sdpi-item">
-							<div class="sdpi-item-label" data-localize>Minutes</div>
-							<input class="sdpi-item-value" name="minutes" type="number" min="0" max="59" placeholder="0" />
+							<div class="sdpi-item-label" data-localize>Short Break</div>
+							<input class="sdpi-item-value" name="shortBreakTime" type="number" min="1" max="40" placeholder="5" />
 						</div>
 
 						<div class="sdpi-item">
-							<div class="sdpi-item-label" data-localize>Seconds</div>
-							<input class="sdpi-item-value" name="seconds" type="number" min="0" max="59" placeholder="0" />
-						</div>
-
-					</div>
-				</div>
-
-				<div type="group" class="sdpi-item">
-					<div class="sdpi-item-label" data-localize>Break Time</div>
-					<div class="sdpi-item-group">
-
-						<div class="sdpi-item">
-							<div class="sdpi-item-label" data-localize>Minutes</div>
-							<input class="sdpi-item-value" name="breakMinutes" type="number" min="0" max="59" placeholder="0" />
-						</div>
-
-						<div class="sdpi-item">
-							<div class="sdpi-item-label" data-localize>Seconds</div>
-							<input class="sdpi-item-value" name="breakSeconds" type="number" min="0" max="59" placeholder="0" />
+							<div class="sdpi-item-label" data-localize>Long Break</div>
+							<input class="sdpi-item-value" name="longBreakTime" type="number" min="1" max="120" placeholder="15" />
 						</div>
 
 					</div>

@@ -96,18 +96,17 @@ class IntervalTimer {
 	}
 
 	gotoNextPeriod(nowMs = null) {
-		const hasBreak = this.breakGoalSec > 0;
-		if (this.isBreak || !hasBreak) {
-			this.round++;
-			this.isBreak = false;
-			this.canvasTimer.drawTimer(0, this.goalSec, this.round, this.isBreak, this.isRunning);
-		} else {
-			this.isBreak = true;
-			this.canvasTimer.drawTimer(0, this.breakGoalSec, this.round, this.isBreak, this.isRunning);
-		}
 		nowMs = nowMs ?? Date.now();
 		this.timerStartMs = nowMs;
 		this.pauseStartMs = this.isRunning ? null : nowMs;
+		if (this.isBreak || this.breakGoalSec <= 0) {
+			this.round++;
+			this.isBreak = false;
+		} else {
+			this.isBreak = true;
+		}
+		const goalSec = this.isBreak ? this.breakGoalSec : this.goalSec;
+		this.canvasTimer.drawTimer(0, goalSec, this.round, this.isBreak, this.isRunning);
 	}
 
 	isStarted() {
@@ -182,8 +181,8 @@ class IntervalTimer {
 
 	drawTimer(nowMs = null) {
 		if (this.isStarted()) {
-			let goalSec = this.isBreak ? this.breakGoalSec : this.goalSec;
 			const elapsedSec = this.getElapsedSec(nowMs);
+			const goalSec = this.isBreak ? this.breakGoalSec : this.goalSec;
 			if (elapsedSec < goalSec) {
 				if (!this.isRenderFrozen) {
 					this.canvasTimer.drawTimer(elapsedSec, goalSec, this.round, this.isBreak, this.isRunning);

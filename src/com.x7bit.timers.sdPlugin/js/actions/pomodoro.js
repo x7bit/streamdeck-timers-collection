@@ -29,22 +29,20 @@ class PomodoroTimer {
 	}
 
 	loadSettingsPI(settings, isInit) {
-		this.hours = getIntegerSetting(settings, 'hours', 1);
-		this.minutes = getIntegerSetting(settings, 'minutes');
-		this.seconds = getIntegerSetting(settings, 'seconds');
-		this.breakMinutes = getIntegerSetting(settings, 'breakMinutes');
-		this.breakSeconds = getIntegerSetting(settings, 'breakSeconds');
+		const workGoalSec = getIntegerSetting(settings, 'workTime', 25) * 60;
+		const shortBreakGoalSec = getIntegerSetting(settings, 'shortBreakTime', 5) * 60;
+		const longBreakGoalSec = getIntegerSetting(settings, 'longBreakTime', 15) * 60;
 
-		const goalSec = this.hours * 3600 + this.minutes * 60 + this.seconds;
-		const breakGoalSec = this.breakMinutes * 60 + this.breakSeconds;
 		if (isInit) {
-			this.goalSec = goalSec;
-			this.breakGoalSec = breakGoalSec;
+			this.workGoalSec = workGoalSec;
+			this.shortBreakGoalSec = shortBreakGoalSec;
+			this.longBreakGoalSec = longBreakGoalSec;
 			this.alarmAudio = new AudioHandler(settings);
 		} else {
-			if (this.goalSec !== goalSec || this.breakGoalSec !== breakGoalSec) {
-				this.goalSec = goalSec;
-				this.breakGoalSec = breakGoalSec;
+			if (this.workGoalSec !== workGoalSec || this.shortBreakGoalSec !== shortBreakGoalSec || this.longBreakGoalSec !== longBreakGoalSec) {
+				this.workGoalSec = workGoalSec;
+				this.shortBreakGoalSec = shortBreakGoalSec;
+				this.longBreakGoalSec = longBreakGoalSec;
 				this.drawTimer();
 			}
 			this.alarmAudio.loadSettingsPI(settings, false);
@@ -55,11 +53,9 @@ class PomodoroTimer {
 		const payload = {
 			round: this.round,
 			break: this.isBreak,
-			hours: this.hours.toString(),
-			minutes: this.minutes.toString(),
-			seconds: this.seconds.toString(),
-			breakMinutes: this.breakMinutes.toString(),
-			breakSeconds: this.breakSeconds.toString(),
+			workTime: (this.workGoalSec / 60).toString(),
+			shortBreakTime: (this.shortBreakTime / 60).toString(),
+			longBreakTime: (this.longBreakTime / 60).toString(),
 			timerStartMs: this.timerStartMs,
 			pauseStartMs: this.pauseStartMs,
 			prevPressMs: this.prevPressMs,
@@ -96,18 +92,17 @@ class PomodoroTimer {
 	}
 
 	gotoNextPeriod(nowMs = null) {
-		const hasBreak = this.breakGoalSec > 0;
-		if (this.isBreak || !hasBreak) {
-			this.round++;
-			this.isBreak = false;
-			this.canvasTimer.drawTimer(0, this.goalSec, this.round, this.isBreak, this.isRunning);
-		} else {
-			this.isBreak = true;
-			this.canvasTimer.drawTimer(0, this.breakGoalSec, this.round, this.isBreak, this.isRunning);
-		}
 		nowMs = nowMs ?? Date.now();
 		this.timerStartMs = nowMs;
 		this.pauseStartMs = this.isRunning ? null : nowMs;
+		if (this.isBreak) {
+			this.round = (this.round % 4) + 1;
+			this.isBreak = false;
+		} else {
+			this.isBreak = true;
+		}
+		const goalSec = this.isBreak ? (this.round === 4 ? this.longBreakGoalSec : this.shortBreakGoalSec) : this.workGoalSec;
+		this.canvasTimer.drawTimer(0, goalSec, this.round, this.isBreak, this.isRunning);
 	}
 
 	isStarted() {
@@ -125,7 +120,7 @@ class PomodoroTimer {
 
 	start(nowMs) {
 		if (!this.isRunning) {
-			if (this.goalSec > 0) {
+			if (this.workGoalSec > 0 && this.shortBreakGoalSec > 0 && this.longBreakGoalSec > 0) {
 				if (this.isStarted()) {
 					const pauseElapsedMs = nowMs - this.pauseStartMs;
 					this.timerStartMs += pauseElapsedMs;
@@ -182,8 +177,8 @@ class PomodoroTimer {
 
 	drawTimer(nowMs = null) {
 		if (this.isStarted()) {
-			let goalSec = this.isBreak ? this.breakGoalSec : this.goalSec;
 			const elapsedSec = this.getElapsedSec(nowMs);
+			const goalSec = this.isBreak ? (this.round === 4 ? this.longBreakGoalSec : this.shortBreakGoalSec) : this.workGoalSec;
 			if (elapsedSec < goalSec) {
 				if (!this.isRenderFrozen) {
 					this.canvasTimer.drawTimer(elapsedSec, goalSec, this.round, this.isBreak, this.isRunning);
@@ -232,7 +227,7 @@ class CanvasPomodoroTimer {
 		this.ctx.textAlign = 'center';
 		this.ctx.fillText(remainingText, 72, posYRem);
 		//Foreground Text (round)
-		const roundText = `${(isBreak ? 'Break' : 'Round')} ${round}`;
+		const roundText = this.getRoundText(round, isBreak);
 		const fSizeRnd = this.getRoundFontSize(round);
 		const fSizeRndThird = fSizeRnd / 3;
 		this.ctx.fillStyle = isRunning ? '#5881e0' : '#606060';
@@ -272,6 +267,14 @@ class CanvasPomodoroTimer {
 		);
 	}
 
+	getRoundText(round, isBreak) {
+		if (isBreak) {
+			return round === 4 ? 'Long Break' : `Break ${round}`;
+		} else {
+			return `Work ${round}`;
+		}
+	}
+
 	getRemainingFontSize(len) {
 		if (len <= 5) {
 			return 38;
@@ -280,10 +283,10 @@ class CanvasPomodoroTimer {
 	}
 
 	getRoundFontSize(round) {
-		if (round <= 9) {
+		if (round < 4) {
 			return 23;
 		}
-		return 21;
+		return 20;
 	}
 
 	getCircleColor(index) {
